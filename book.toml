@@ -1,7 +1,7 @@
 # Book manifest: how this book is cataloged. Validated against the taxonomy on every pull request.
 slug = "time-series-forecasting"
 title = "Time Series Forecasting"
-summary = "Forecasts you can trust, from baselines and backtests to uncertainty you can act on."
+summary = "How to forecast demand a day ahead and check that the forecast holds up: baselines, backtests that never see the future, statistical models, one LightGBM model for all clients, totals that add up, and calibrated prediction intervals, on hourly electricity demand from thirty clients."
 status = "live"                      # draft | live | unmaintained | retired
 level = "in-practice"                 # foundations | in-practice
 reader = "For data scientists and analysts who know pandas and basic regression and are asked to forecast demand, such as sales, energy, tickets or traffic, and need forecasts that hold up when they are checked."
