@@ -8,7 +8,7 @@ By Rolling Edition, with AI · **In practice** · [Read it free online](https://
 
 [![The latest edition's stamp](https://rollingedition.com/time-series-forecasting/stamp.svg)](https://rollingedition.com/time-series-forecasting) [![Checks](https://github.com/rollingedition/book-time-series-forecasting/actions/workflows/checks.yml/badge.svg)](https://github.com/rollingedition/book-time-series-forecasting/actions/workflows/checks.yml)
 
-Forecasts you can trust, from baselines and backtests to uncertainty you can act on.
+How to forecast demand a day ahead and check that the forecast holds up: baselines, backtests that never see the future, statistical models, one LightGBM model for all clients, totals that add up, and calibrated prediction intervals, on hourly electricity demand from thirty clients.
 
 **Written with AI. Verified by people.** [How we make books](https://rollingedition.com/policies/editorial) · [Check a copy](https://rollingedition.com/check)
 
