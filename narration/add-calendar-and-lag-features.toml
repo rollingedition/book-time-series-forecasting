@@ -1,0 +1,12 @@
+# Spoken descriptions for chapter 5 (W-54 to W-56). Narration reads these in place of the code, output and table.
+
+[examples.lgbm-feature-sets]
+say = "The code builds three gradient-boosting feature sets for the eight clients of the subset: lags only, lags with calendar features, and lags with the holiday flag as well. It chooses among them on eleven decision windows: four ordinary days in late November and early December 2014, and seven holidays from April to December 2014. Each client's target is scaled, and the code scores the forecasts against the readings that followed, beside seasonal naive on the same windows. It also fits each set unscaled, to show the failure that scaling corrects. It prints the windows, which are {{out:lgbm-feature-sets:decision windows}}, and the scored hours, which are {{out:lgbm-feature-sets:scored hours}}. It prints the Portuguese holidays in the two years of data, which are {{out:lgbm-feature-sets:Portuguese holidays in 2013 and 2014}}, and the holiday hours in the decision windows, which are {{out:lgbm-feature-sets:holiday hours in the decision windows}}. Then it prints each model's pooled mean absolute error, its average per-client MASE, and the MASE of one client, for the scaled models and the unscaled ones. It also prints the average MASE of each model on the standard cutoffs, for comparison only. Last, it prints the masked clock-change hours in one history and the rows whose lag reads one."
+
+[examples.lag-leak-check]
+say = "The code takes the lead client's hourly readings and runs a shift test on three lags. For each lag, it computes the value at each target hour twice, once from the history cut at the cutoff and once from the whole series, and counts the hours where the two differ. It prints the rows compared, which are {{out:lag-leak-check:rows compared}}, and the rows that differ for each lag. Then it fits two gradient-boosting models at each of the three cutoffs: one with lags of 24 and 168 hours, and one that also uses a lag of 1. It prints the mean absolute error of each, so a listener can compare the honest model with the leaky one."
+
+[[tables]]
+section = "add-lags-the-forecast-can-see"
+starts = "| Target hour | Lag 1 reads"
+say = "The table has a row for each of three target hours in the day-ahead forecast: midnight, one o'clock and eleven at night. For each row it gives the hour that a lag of 1 reads and whether that reading is known at the cutoff, then the same for a lag of 24. A lag of 1 is known only at midnight. A lag of 24 is known at all three hours."

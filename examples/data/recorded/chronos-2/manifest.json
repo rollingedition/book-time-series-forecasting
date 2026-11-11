@@ -1,0 +1,63 @@
+{
+  "created": "2026-11-10",
+  "machine": "a 4-vCPU cloud Linux container, CPU only, no GPU",
+  "model": "amazon/chronos-2",
+  "model_version": "29ec3766d36d6f73f0696f85560a422f50e8498c",
+  "note": "prompt_sha256 is SHA-256 of inputs.csv.gz's bytes followed by the canonical JSON (sorted keys, no spaces) of the call configuration: {\"batch_size\":256,\"clients\":\"ALL30\",\"clock_change_hours\":\"set to NaN\",\"context_hours\":1344,\"cutoffs\":[\"2014-12-29 00:00\",\"2014-12-30 00:00\",\"2014-12-31 00:00\"],\"device\":\"cpu\",\"horizon\":24,\"model\":\"amazon/chronos-2\",\"nan_handling\":\"NaN passed to the model, no fill\",\"quantiles\":[0.025,0.1,0.5,0.9,0.975],\"revision\":\"29ec3766d36d6f73f0696f85560a422f50e8498c\",\"seed\":0,\"start_rule\":\"leading rows flagged before_first_reading removed\",\"threads\":2}. Missing values: NaN is passed to the model as is: chronos/chronos2/model.py builds the context mask from isnan, and the scaling ignores masked values. No fill is applied. NaN cells in the contexts: 0. Output is rounded to 3 decimals. The release service never runs this script; examples read the recorded outputs.",
+  "outputs": {
+    "forecasts.csv.gz": "3d2959f1da655839fad924d277c3aab8a5fed97f8d97c00c734fee060eeb1267",
+    "inputs.csv.gz": "45aa77cf230b1b52092cf80682cf35b3bf37710928ed0c45920472dd0c0f063d"
+  },
+  "packages": {
+    "chronos-forecasting": "2.3.2",
+    "numpy": "2.5.4",
+    "pandas": "3.1.1",
+    "torch": "2.15.0+cpu",
+    "transformers": "5.22.2"
+  },
+  "prompt_sha256": "c4a403fa8a654bcd6337c3b033b107477966d46516ba669f9230145dcc478ea9",
+  "quantiles": {
+    "interpolated": [
+      0.025,
+      0.975
+    ],
+    "interpolation": "chronos/utils.py interpolate_quantiles: each interpolated level is linear between the two nearest trained levels that bracket it (the edge padding applies only outside the trained range)",
+    "predicted": [
+      0.1,
+      0.5,
+      0.9
+    ],
+    "requested": [
+      0.025,
+      0.1,
+      0.5,
+      0.9,
+      0.975
+    ],
+    "trained_by_model": [
+      0.01,
+      0.05,
+      0.1,
+      0.15,
+      0.2,
+      0.25,
+      0.3,
+      0.35,
+      0.4,
+      0.45,
+      0.5,
+      0.55,
+      0.6,
+      0.65,
+      0.7,
+      0.75,
+      0.8,
+      0.85,
+      0.9,
+      0.95,
+      0.99
+    ]
+  },
+  "rows": 2160,
+  "script": "recordings/chronos2_forecast.py"
+}

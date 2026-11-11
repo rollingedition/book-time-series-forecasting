@@ -1,0 +1,37 @@
+{
+  "created": "2026-11-10",
+  "machine": "a 4-vCPU cloud Linux container, CPU only, no GPU",
+  "model": "NHITS (neuralforecast)",
+  "model_version": "neuralforecast 3.3.0; NHITS {\"batch_size\":32,\"h\":24,\"input_size\":168,\"learning_rate\":0.001,\"loss\":\"MQLoss\",\"max_steps\":500,\"note\":\"other NHITS arguments at neuralforecast 3.3.0 defaults\",\"quantiles\":[0.025,0.1,0.5,0.9,0.975],\"random_seed\":0,\"scaler_type\":\"standard\"}",
+  "note": "prompt_sha256 is SHA-256 of inputs.csv.gz's bytes (the Chronos-2 contexts, examples/data/recorded/chronos-2/inputs.csv.gz) followed by the canonical JSON (sorted keys, no spaces) of the call configuration: {\"clients\":\"ALL30\",\"context_hours\":1344,\"cutoffs\":[\"2014-12-29 00:00\",\"2014-12-30 00:00\",\"2014-12-31 00:00\"],\"device\":\"cpu\",\"horizon\":24,\"hyperparameters\":{\"batch_size\":32,\"h\":24,\"input_size\":168,\"learning_rate\":0.001,\"loss\":\"MQLoss\",\"max_steps\":500,\"note\":\"other NHITS arguments at neuralforecast 3.3.0 defaults\",\"quantiles\":[0.025,0.1,0.5,0.9,0.975],\"random_seed\":0,\"scaler_type\":\"standard\"},\"model\":\"NHITS (neuralforecast)\",\"model_version\":\"3.3.0\",\"nan_handling\":\"clock-change NaN filled as the mean of the hours either side, from the context only\",\"quantiles\":[0.025,0.1,0.5,0.9,0.975],\"seed\":0,\"start_rule\":\"leading rows flagged before_first_reading removed (already applied in inputs)\",\"threads\":2}. Missing values: 0 hours were NaN in the contexts (clock-change hours) and were filled, each as the mean of the hour before and after from that context only (B-2), because NHITS cannot take NaN. The weights are trained here, one model per cutoff, and are not shipped. Scaler: neuralforecast 'standard'. Output is rounded to 3 decimals. The release service never runs this script; examples read the recorded outputs.",
+  "outputs": {
+    "forecasts.csv.gz": "45af8054fed57431f56fc8f0e12e5a904acdff2357afdbbfc035d4e01e789553"
+  },
+  "packages": {
+    "neuralforecast": "3.3.0",
+    "numpy": "2.5.4",
+    "pandas": "2.3.3",
+    "pytorch-lightning": "2.6.6",
+    "torch": "2.15.0+cpu"
+  },
+  "prompt_sha256": "0ebfc314356a87b6e959a8690659d25807a003fddcde775b0a707369b7e22d05",
+  "quantiles": {
+    "mapping": {
+      "0.025": "NHITS-lo-95.0",
+      "0.1": "NHITS-lo-80.0",
+      "0.5": "NHITS-median",
+      "0.9": "NHITS-hi-80.0",
+      "0.975": "NHITS-hi-95.0"
+    },
+    "mapping_source": "neuralforecast.losses.pytorch.quantiles_to_outputs: MQLoss(quantiles=...) trains each level directly; no interpolation",
+    "requested": [
+      0.025,
+      0.1,
+      0.5,
+      0.9,
+      0.975
+    ]
+  },
+  "rows": 2160,
+  "script": "recordings/nhits_forecast.py"
+}

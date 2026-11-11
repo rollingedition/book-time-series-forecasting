@@ -1,0 +1,24 @@
+# Spoken descriptions for chapter 9 (W-54 to W-56). Narration reads these in place of the code, output and table.
+
+[examples.prophet-holiday-decision]
+say = "The code fits Prophet to each client's history of the eight clients of SUBSET8, on eleven decision windows: four ordinary days in November and early December 2014, and seven holidays from April to December 2014. It fits once with the Portuguese holiday table and once without it. It scores both on the book's MASE scale beside seasonal naive, on the same hours, and prints how many hours the two variants forecast differently and which variant the rule keeps. The table is kept only if it lowers the mean MASE, and the verdict is {{out:prophet-holiday-decision:holiday table kept}}."
+
+[examples.prophet-thirty-clients-backtest]
+say = "The code fits Prophet to each client's history, once for each of the three standard cutoffs, from Dec 29 to Dec 31, 2014, and forecasts the next day. It scores the forecasts on the book's MASE scale beside seasonal naive and the global model, on the same hours. It prints the interval level, whether the holiday table is on, how many clients Prophet beats, the mean per-client MASE of each model over all thirty clients and over the eight clients of SUBSET8, the pooled error, and the coverage and interval score of Prophet's 95% interval. It ends with the mean MASE with the holiday table on, which is for comparison only. Prophet's mean MASE over the thirty clients is {{out:prophet-thirty-clients-backtest:mean MASE Prophet}}, against {{out:prophet-thirty-clients-backtest:mean MASE SeasonalNaive}} for seasonal naive and {{out:prophet-thirty-clients-backtest:mean MASE Global}} for the global model."
+
+[examples.recorded-chronos2-check]
+say = "The code checks each file of the recording against its hash in the manifest. It then counts the rows, clients and cutoffs in the forecast file, and the levels the package interpolated. It prints {{out:recorded-chronos2-check:hash mismatches}} hash mismatches and {{out:recorded-chronos2-check:rows with quantiles out of order}} rows with quantiles out of order. The model is not run, and the check reads only the saved files."
+
+[examples.recorded-chronos2-score]
+say = "The code reads the recorded forecasts only, after the hash check, and scores the median as a point forecast on the same MASE scale as the other models. It prints the mean MASE of the median, the quantile losses at 0.1, 0.5 and 0.9, and the coverage and interval score of the 80% range and the 95% range. The 95% range is built from the two interpolated quantiles. The median's mean MASE over the thirty clients is {{out:recorded-chronos2-score:mean MASE Chronos}}, and its 95% range covers {{out:recorded-chronos2-score:coverage 95 Chronos}} of the readings."
+
+[examples.recorded-nhits-check]
+say = "The code checks the NHITS recording the same way, against its hash in the manifest. It then counts the rows, clients and cutoffs, and the quantiles that are out of order. It prints {{out:recorded-nhits-check:hash mismatches}} hash mismatches and {{out:recorded-nhits-check:rows with quantiles out of order}} rows with quantiles out of order. Its levels were each trained directly, so none is interpolated. The model is not run, and the check reads only the saved files."
+
+[examples.recorded-nhits-score]
+say = "The code reads the NHITS forecasts only, after the hash check, and scores the median on the same MASE scale and the same cutoffs as Chronos-2. It prints the mean MASE of the median, the quantile losses, and the coverage and interval score of the 80% and 95% ranges. The median's mean MASE over the thirty clients is {{out:recorded-nhits-score:mean MASE NHITS}}, and its 95% range covers {{out:recorded-nhits-score:coverage 95 NHITS}} of the readings."
+
+[[tables]]
+section = "score-the-recording-on-the-same-cutoffs"
+starts = "| Model |"
+say = "A table of five models, one row each: seasonal naive, the global model from Chapter 6, the Chronos-2 median, the NHITS median and Prophet's point forecast. Its columns give each model's mean per-client MASE over all thirty clients and over the eight clients of SUBSET8, and its pooled MAE over all thirty clients in kWh. The Chronos-2 row has the lowest mean MASE on both sets."

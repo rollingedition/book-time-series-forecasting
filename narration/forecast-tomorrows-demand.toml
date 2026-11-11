@@ -1,0 +1,15 @@
+# Spoken descriptions for chapter 1 (W-54 to W-56). Narration reads these in place of the code, output and table.
+
+[examples.load-lead-client]
+say = "The code loads one client's hourly readings from the book's file and counts the quirk labels on its rows. It prints how many clients the file holds, the lead client's row count and first and last hours, and how many rows carry each label. Then it checks the eight-week history before each day of the held-out week: their length, where the first one starts, and how many clock-change rows they hold in total, which is {{out:load-lead-client:clock-change rows in held-out histories}}."
+
+[examples.seasonal-naive-next-day]
+say = "The code gives the lead client's readings to the seasonal naive model. For each of the seven days of the held-out week, it forecasts the next 24 hours from the eight weeks before that day begins, then scores the {{out:seasonal-naive-next-day:scored hours}} forecast hours against the readings that followed. It prints the number of windows, the number of missing forecasts, which is {{out:seasonal-naive-next-day:missing forecasts}}, and the mean demand over those hours, which is {{out:seasonal-naive-next-day:mean demand}} kilowatt hours. Then it gives two errors: the mean absolute error, {{out:seasonal-naive-next-day:MAE}}, and the root mean squared error, {{out:seasonal-naive-next-day:RMSE}}. It also prints the mean absolute error for each day. The worst day is the day after Christmas, at {{out:seasonal-naive-next-day:MAE 2014-12-26}}, because the forecast copies Christmas Day."
+
+[examples.autoets-next-day]
+say = "The code gives the lead client's readings to the AutoETS model, with a season of 24 hours and the error and trend forms left for the model to choose. It does the same seven windows as the seasonal naive example, refitting the model for each day from the eight weeks before it. The output has the same window and hour counts, so the two scores cover the same hours. It prints how many windows chose each form, which is additive error, no trend and an additive daily season in all {{out:autoets-next-day:windows that chose ETS(A,N,A)}}. It prints the mean absolute error, {{out:autoets-next-day:MAE}}, and the root mean squared error, {{out:autoets-next-day:RMSE}}."
+
+[[tables]]
+section = "score-on-a-held-out-week"
+starts = "| Model | MAE (kWh) | RMSE (kWh) |"
+say = "The table has a row for each model, with its mean absolute error and root mean squared error in kilowatt hours. The seasonal naive baseline is {{out:seasonal-naive-next-day:MAE}} and {{out:seasonal-naive-next-day:RMSE}}. AutoETS is {{out:autoets-next-day:MAE}} and {{out:autoets-next-day:RMSE}}, so on both scores the baseline is lower. A lower number means forecasts closer to the readings."
