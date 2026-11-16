@@ -13,7 +13,7 @@ from lib.quirks import filled_history, mask_clock_changes
 from lib.settings import EVAL_CUTOFFS, HORIZON, SEED, SUBSET8, show
 from lib.subsets import score_clients, show_client_lines
 np.random.seed(SEED)                                        # the seed from lib/settings.py, set before any fit
-masked = mask_clock_changes(load(SUBSET8))                  # clock-change hours become NaN: never scored and never a training row
+masked = mask_clock_changes(load(SUBSET8))                  # clock-change hours become NaN, so they are never scored; filled_history fills them from their neighbours before each fit
 scale = book_scale(load(SUBSET8), EVAL_CUTOFFS[0])        # MASE scale: rows before the first cutoff, from each client's first reading
 # ZZA: Z lets the model choose the error and the trend, A forces an additive season. alias names the output columns.
 sf = StatsForecast(models=[AutoETS(model="ZZA", season_length=24, alias="ZZA"), SeasonalNaive(season_length=24)],

@@ -29,7 +29,7 @@ for model in MODELS:
 for model in MODELS:
     show(f"mean MASE {model.replace('unscaled_', 'unscaled ')}", per_client[model].mean(), digits=3)
 for model in MODELS:
-    # MT_268 is one client's MASE, to set beside the mean over all eight
+    # the prose does not quote this client, so this line is for reference only
     show(f"MASE MT_268 {model.replace('unscaled_', 'unscaled ')}", per_client.loc["MT_268", model], digits=3)
 
 # The standard cutoffs, reported beside the choice above. Nothing is chosen from them.

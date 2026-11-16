@@ -6,11 +6,11 @@ chapter_id: fit-statistical-models-per-client
 
 By the end of this chapter you can fit AutoETS and a fixed seasonal ARIMA for each client over the same backtest, score both against seasonal naive, and start a late-starting client at its first reading. The chapter assumes the baselines and backtests of the two chapters before it.
 
-The supplier, which buys power a day ahead for its clients, forecasts each of them with the rule from [Chapter 2](#beat-the-naive-baselines): the same hour yesterday. That rule keeps no estimate of a client's level or its trend, and the clients differ in both. So this chapter fits a statistical model for each client, and asks whether the extra work pays.
+Each of the supplier's clients needs its own day-ahead forecast, and [Chapter 2](#beat-the-naive-baselines)'s rule gives every one of them the same answer: the same hour yesterday. That rule keeps no estimate of a client's level or its trend, and the clients differ in both. So this chapter fits a statistical model for each client, and asks whether the extra work pays.
 
 ## Why a statistical model comes next {#why-a-statistical-model-comes-next}
 
-[Chapter 2](#beat-the-naive-baselines) set the bar, and MASE, the scaled error, compares clients with different loads on one scale. [Chapter 3](#backtest-without-looking-ahead) backtested that forecast over many cutoffs. A cutoff is the time a forecast is made, and its history ends there. A window is one cutoff and the 24 hours after it, which is the horizon. Each window's history ends at its cutoff, so no hour is forecast with data from its own day.
+[Chapter 2](#beat-the-naive-baselines) set the bar. Seasonal naive forecasts each hour as the same hour yesterday, and the scaled error, MASE, compares clients with different loads on one scale. [Chapter 3](#backtest-without-looking-ahead) backtested that forecast over many cutoffs. A cutoff is the time a forecast is made, and its history ends there. A window is one cutoff and the 24 hours after it, which is the horizon. Each window's history ends at its cutoff, so no hour is forecast with data from its own day.
 
 A statistical model adds to that loop. A series has a state. Its level is the typical reading, its trend is the slow drift of that level, its season is the daily shape of the load, and what none of these explain is error. A statistical model holds an estimate of each part, updates the estimates as each reading arrives, and projects them over the horizon. Seasonal naive has no such state. It copies yesterday, so it gets a client's level only as well as yesterday did.
 
@@ -24,29 +24,27 @@ Seasonal naive keeps only yesterday, so the first candidate keeps a level instea
 
 ETS, for error, trend and season, extends that form. Each part is chosen from a short list. The trend can be none, additive or damped. The error can be additive or multiplicative, and the season can be none, additive or multiplicative. A name such as ETS(A,N,A) reads in that order: additive error, no trend, additive season. ETS(M,Ad,M) has a multiplicative error, a damped trend and a multiplicative season.
 
-AutoETS chooses the form for you. Its default criterion is AICc, the corrected Akaike information criterion, which charges a model for each parameter and corrects for small samples. The statsforecast {{version:statsforecast}} docstring for `AutoETS` in `statsforecast/models.py` says so. Two of its defaults matter for hourly demand. The season length defaults to 1, which means no season at all, and the model gives no warning when you leave it that way. The `model` argument defaults to `"ZZZ"`, which lets the model choose all three parts. For hourly demand with a daily pattern, the call sets `season_length=24`.
+AutoETS chooses the form for you. Its default criterion is AICc, the corrected Akaike information criterion, which charges a model for each parameter and corrects for small samples, as the `AutoETS` docstring in statsforecast {{version:statsforecast}} (`statsforecast/models.py`) says. Two of its defaults matter for hourly demand. The season length defaults to 1, which means no season at all, and the model gives no warning when you leave it that way. The `model` argument defaults to `"ZZZ"`, which lets the model choose all three parts. For hourly demand with a daily pattern, the call sets `season_length=24`.
 
-The question is which form AutoETS picks for each client, and whether its forecasts beat seasonal naive. The backtest prints each form and scores both models.
+Which form does AutoETS pick for each client, and do its forecasts beat seasonal naive? The lines it prints answer both.
 
 [Example: autoets-subset-backtest](../examples/autoets-subset-backtest.py)
 
-The chosen form changes from client to client, and for some clients from one cutoff to the next. Across the 24 fits, AutoETS chose ETS(A,N,N), with no season, for {{out:autoets-subset-backtest:fits that chose ETS(A,N,N)}} of them, and ETS(A,N,A), with an additive season, for {{out:autoets-subset-backtest:fits that chose ETS(A,N,A)}}. ETS(A,Ad,A), a damped trend with an additive season, came up in {{out:autoets-subset-backtest:fits that chose ETS(A,Ad,A)}} fit. The other fits used a multiplicative part, in the error, the season or both. The lines printed under the totals give each client's three forms. Three clients, MT_014, MT_064 and MT_370, take the flat form at all three cutoffs. MT_014 is the lead client, the one [Chapter 1](#forecast-tomorrows-demand) met.
+The chosen form changes from client to client, and for some clients from one cutoff to the next. Across the 24 fits, AutoETS chose ETS(A,N,N), with no season, for {{out:autoets-subset-backtest:fits that chose ETS(A,N,N)}} of them, and ETS(A,N,A), with an additive season, for {{out:autoets-subset-backtest:fits that chose ETS(A,N,A)}}. ETS(A,Ad,A), a damped trend with an additive season, came up in {{out:autoets-subset-backtest:fits that chose ETS(A,Ad,A)}} of the fits. The other fits used a multiplicative part, in the error, the season or both. The lines printed under the totals give each client's three forms. Three clients, MT_014, MT_064 and MT_370, take the flat form at all three cutoffs. MT_014 is the lead client, the one [Chapter 1](#forecast-tomorrows-demand) met.
 
-A flat form needs explaining, because the seasonal form contains it. ETS(A,N,N) is ETS(A,N,A) with the seasonal part switched off, so the best seasonal fit cannot have a lower likelihood than the flat fit on the same history. The flat-form check runs both forms on each of the 24 windows.
+If the seasonal form contains the flat one, how can the flat one win? ETS(A,N,N) is ETS(A,N,A) with the seasonal part switched off, so the best seasonal fit cannot have a lower likelihood than the flat fit on the same history. Fitting both forms on each of the 24 windows shows whether that happens.
 
 [Example: flat-form-check](../examples/flat-form-check.py)
 
 The seasonal fit loses on likelihood, not only on AICc. Its log-likelihood is lower in {{out:flat-form-check:seasonal fit has the lower log-likelihood}} of the {{out:flat-form-check:windows}} windows, and its AICc is higher in {{out:flat-form-check:seasonal fit has the higher AICc}}. Those are the same nine windows in which the default run chose the flat form. AICc charges a model for each parameter, and the seasonal form has 24 more. That charge adds to the gap; it does not cause it, because the seasonal fit's likelihood is already lower before any charge is made. The seasonal fit most likely stopped short of its best value, and the flat form won by default. The book does not chase the optimiser further. It tests the choice instead, with a forced season.
 
-Chapter 1 forced an additive season on the lead client, with `model="ZZA"`, and seasonal naive still had the lower error there. The forced run covers all eight clients, and it is the second backtest, beside the default.
+Chapter 1 forced an additive season on the lead client, with `model="ZZA"`, and seasonal naive still had the lower error there. Does that hold across all eight? The forced run covers the same eight clients, and it is the second backtest, beside the default.
 
 [Example: autoets-forced-season-backtest](../examples/autoets-forced-season-backtest.py)
 
-Forcing the season makes AutoETS better on average than the default, but not better than seasonal naive. Its mean MASE is {{out:autoets-forced-season-backtest:MASE ZZA}}, against {{out:autoets-subset-backtest:MASE AutoETS}} for the default and {{out:autoets-subset-backtest:MASE SeasonalNaive}} for seasonal naive, and its intervals cover {{out:autoets-forced-season-backtest:coverage 95 ZZA}} of hours.
+On mean MASE, forcing the season brings AutoETS level with seasonal naive, though no better: {{out:autoets-forced-season-backtest:MASE ZZA}} against {{out:autoets-subset-backtest:MASE AutoETS}} for the default and {{out:autoets-subset-backtest:MASE SeasonalNaive}} for seasonal naive.
 
-The forced season helps some clients and hurts others. The lead client's MASE goes from {{out:autoets-subset-backtest:MASE MT_014 AutoETS}} to {{out:autoets-forced-season-backtest:MASE MT_014 ZZA}}, and MT_064's from {{out:autoets-subset-backtest:MASE MT_064 AutoETS}} to {{out:autoets-forced-season-backtest:MASE MT_064 ZZA}}.
-
-MT_370 goes the other way, from {{out:autoets-subset-backtest:MASE MT_370 AutoETS}} to {{out:autoets-forced-season-backtest:MASE MT_370 ZZA}}. So forcing the season is a change to test on each client, not a fix to apply to all of them.
+The forced season helps some clients and hurts others. It lowers the lead client's MASE, from {{out:autoets-subset-backtest:MASE MT_014 AutoETS}} to {{out:autoets-forced-season-backtest:MASE MT_014 ZZA}}, and MT_064's too, but it raises MT_370's, from {{out:autoets-subset-backtest:MASE MT_370 AutoETS}} to {{out:autoets-forced-season-backtest:MASE MT_370 ZZA}}. So forcing the season is a change to test on each client, not a fix to apply to all of them.
 
 **Working rule:** Start with AutoETS for hourly demand with `season_length=24`, and print the chosen forms in every backtest. When a client takes a flat form, check that its seasonal form is not failing. If the seasonal fit has the lower likelihood, force the season with `model="ZZA"`, and score both forms on earlier windows before you keep either: cutoffs before the held-out week that the report does not score, such as the four ordinary days in late November and early December 2014 that Chapter 6 uses. The standard cutoffs show the comparison here, but they do not decide it. A form that changes from one cutoff to the next is the first thing to check when a forecast gets worse.
 
@@ -66,15 +64,15 @@ We fix the order rather than search for it, and [the section on automatic search
 
 The list has three names: `ar.L1`, `ar.S.L24` and `sigma2`. The first is the autoregressive term, which says how much an hour's change from the same hour yesterday carries into the next hour. The second is the seasonal term at lag 24, which says how much a day's change at an hour carries into the same hour the next day. The third is the variance of the error. The list has no intercept. statsmodels adds one to a seasonal ARIMA only when `trend` is set, so the list would show none whether or not the series is differenced, and the seasonally differenced model needs none in any case. A full statsmodels summary also gives each value. This book does not quote them. The values change with the window and the library version, and a reader needs to know what each term means more than its current number.
 
-Its scores come in the [comparison section](#compare-models-on-the-same-cutoffs) below.
+The fixed model is then one more candidate in the backtest, beside AutoETS and seasonal naive. Its scores come in the [comparison section](#compare-models-on-the-same-cutoffs) below.
 
 **Working rule:** When a search is too slow to run at every cutoff, fix the order and write it in the call. Print the summary once, and check that the terms it lists are the ones you meant. Refit the fixed order at every cutoff, as you would refit any model. The order stays fixed. The coefficients do not.
 
 ## Compare models on the same cutoffs {#compare-models-on-the-same-cutoffs}
 
-Four rows now forecast the same 24 hours at the same three cutoffs, from the same eight weeks of history, for the same eight clients: seasonal naive, AutoETS, AutoETS with the season forced, and ARIMA. Each backtest is a separate script, so each finishes well inside the 45 seconds the book allows an example on two CPUs.
+Four forecasts now cover the same 24 hours at the same three cutoffs, from the same eight weeks of history, for the same eight clients: seasonal naive, AutoETS, AutoETS with the season forced, and ARIMA. Each backtest is a separate script, so each finishes well inside the 45 seconds the book allows an example on two CPUs.
 
-The ARIMA backtest adds the fixed order to the scores, on the same measures.
+One score is still missing: the fixed ARIMA's, on the same windows and measures.
 
 [Example: arima-subset-backtest](../examples/arima-subset-backtest.py)
 
@@ -97,9 +95,7 @@ Three windows are a small sample. AutoETS beats seasonal naive on {{out:autoets-
 
 ## Meet the late starters {#meet-the-late-starters}
 
-The December cutoffs do not meet this case, so this section takes up the subset's one late starter.
-
-The subset has one late starter, MT_115, whose first non-zero reading is at 00:00 on Jan 14, 2014. Before that, the meter reports zeros, and the data flags those hours `before_first_reading`. Those zeros are not low use, but a model that reads them learns a level the client does not have. A late starter is a client whose first reading falls inside the history its model reads. The fix is the start rule: a series begins at its first reading. This matters for the supplier's decision. A level pulled low means buying too little for that client, and the case says buying too little costs more than buying too much.
+One client in the subset starts late. MT_115's first non-zero reading is at 00:00 on Jan 14, 2014. Before that, the meter reports zeros, and the data flags those hours `before_first_reading`. Those zeros are not low use. A model that reads them learns a level the client does not have. A late starter is a client whose first reading falls inside the history its model reads. The fix is the start rule: a series begins at its first reading. This matters for the supplier's decision. A level pulled low means buying too little for that client, and the case says buying too little costs more than buying too much.
 
 At the December cutoffs the eight weeks before each one are all readings, so this section uses February cutoffs: Feb 1, 2014, Feb 15, 2014 and Feb 28, 2014. Their eight-week histories still reach back before the first reading, so the case is in them. [Chapter 6](#forecast-many-clients-at-once) applies the same rule to all thirty clients.
 
@@ -107,7 +103,7 @@ At the December cutoffs the eight weeks before each one are all readings, so thi
 
 Start with the raw history, the eight weeks before each February cutoff with its zeros included. The share of zero hours in that history is {{out:late-starter-trim:zero percent before 2014-02-01}}% on Feb 1, 2014, {{out:late-starter-trim:zero percent before 2014-02-15}}% on Feb 15, 2014 and {{out:late-starter-trim:zero percent before 2014-02-28}}% on Feb 28, 2014. The share falls as the cutoff passes the first reading.
 
-The script fits AutoETS on the raw history and on the start history at each February cutoff, and scores each fit on the day after its cutoff.
+Does starting the history at the first reading fix it? Fitting AutoETS twice at each February cutoff, once on the raw eight weeks and once on the start history, which begins at MT_115's first reading, shows whether it does, scored on the day after each cutoff.
 
 [Example: late-starter-trim](../examples/late-starter-trim.py)
 
@@ -121,17 +117,15 @@ The start rule says that a series begins at its first reading. It drops every re
 
 Before the rule is used, check that it does what the flag says. `check_start_rule` counts the rows the rule would drop across the whole series, and raises an error unless those rows are exactly the rows flagged `before_first_reading`. On the subset, the rule drops {{out:late-starter-trim:start rule drops, SUBSET8}} hours, and the flag marks {{out:late-starter-trim:flagged before_first_reading, SUBSET8}}. They match. The only late starter in the subset is MT_115.
 
-The start rule makes each history shorter at an early cutoff, and each one grows with its cutoff: {{out:late-starter-trim:start history hours 2014-02-01}} hours on Feb 1, 2014, {{out:late-starter-trim:start history hours 2014-02-15}} on Feb 15 and {{out:late-starter-trim:start history hours 2014-02-28}} on Feb 28, against {{out:late-starter-trim:raw history hours 2014-02-01}} for the raw history.
+The rule shortens the history most at the first cutoff, {{out:late-starter-trim:start history hours 2014-02-01}} hours against 1,344, and less as the cutoff moves past the first reading: {{out:late-starter-trim:start history hours 2014-02-15}} hours on Feb 15 and {{out:late-starter-trim:start history hours 2014-02-28}} on Feb 28.
 
 The start history picks {{out:late-starter-trim:start form 2014-02-01}} at all three cutoffs, a form with multiplicative error, damped trend and additive season. The raw history changes its form between days, from the flat form on Feb 1 to {{out:late-starter-trim:raw form 2014-02-15}} on Feb 15, 2014 and {{out:late-starter-trim:raw form 2014-02-28}} on Feb 28, 2014.
 
-The gain is not even across the windows, and all of the three-window gain comes from Feb 1. On that day the MAE falls from {{out:late-starter-trim:MAE raw 2014-02-01}} to {{out:late-starter-trim:MAE start 2014-02-01}} kWh, and over all three windows the mean MAE falls from {{out:late-starter-trim:MAE raw, three windows}} to {{out:late-starter-trim:MAE start, three windows}} kWh.
+The gain is not even across the windows, and all of the three-window gain comes from Feb 1, where the MAE falls from {{out:late-starter-trim:MAE raw 2014-02-01}} to {{out:late-starter-trim:MAE start 2014-02-01}} kWh.
 
-On Feb 15 the rule does worse, {{out:late-starter-trim:MAE start 2014-02-15}} kWh against {{out:late-starter-trim:MAE raw 2014-02-15}}.
+On Feb 15 the rule does worse, and on Feb 28 it does a little better. Over those two days together the raw history does slightly better, with a mean MAE of {{out:late-starter-trim:MAE raw, 2014-02-15 and 2014-02-28}} kWh against {{out:late-starter-trim:MAE start, 2014-02-15 and 2014-02-28}}.
 
-On Feb 28 it does a little better, {{out:late-starter-trim:MAE start 2014-02-28}} against {{out:late-starter-trim:MAE raw 2014-02-28}}. Over those two days together the raw history does slightly better, with a mean MAE of {{out:late-starter-trim:MAE raw, 2014-02-15 and 2014-02-28}} kWh against {{out:late-starter-trim:MAE start, 2014-02-15 and 2014-02-28}}.
-
-The fits show how the rule loses on Feb 15. Its damped trend forecasts lower than the raw fit does: {{out:late-starter-trim:start mean forecast 2014-02-15}} kWh an hour on average, against {{out:late-starter-trim:raw mean forecast 2014-02-15}} for the raw fit, when the readings averaged {{out:late-starter-trim:raw mean actual 2014-02-15}} kWh. That low forecast is the cost the case warns about. One client and three days are a small sample, so the figures illustrate the rule and do not carry it.
+The fits show how the rule loses on Feb 15. The start history is still short, {{out:late-starter-trim:start history hours 2014-02-15}} hours, and its damped trend forecasts lower than the raw fit does: {{out:late-starter-trim:start mean forecast 2014-02-15}} kWh an hour on average, against {{out:late-starter-trim:raw mean forecast 2014-02-15}} for the raw fit, when the readings averaged {{out:late-starter-trim:raw mean actual 2014-02-15}} kWh. That low forecast is the cost the case warns about. One client and three days are a small sample, so the figures illustrate the rule and do not carry it.
 
 **Working rule:** When a client's history holds zeros, check whether its first non-zero reading falls inside the history. If it does, apply the start rule before any model sees the history, whatever the zero share, because leading zeros are not use. Run `check_start_rule` on the whole series first, and if it fails, find out why before you trim anything. Print the history length at each cutoff, because a short history is the first sign that the rule has taken too much.
 
@@ -139,7 +133,7 @@ The fits show how the rule loses on Feb 15. Its damped trend forecasts lower tha
 
 AutoARIMA searches for the orders instead of fixing them. It runs a stepwise search over candidate orders, picks the best by AICc, which is its default, and stops after at most 94 candidate models (statsforecast {{version:statsforecast}}, `statsforecast/models.py`, and the stop message in `statsforecast/arima.py`). Each candidate is a full state-space fit. With a season of 24, each candidate that has seasonal terms at lag 24 is slow, and the search tries dozens of them, so it takes far longer than the fits in this chapter.
 
-On the book's pinned setup, two CPUs with statsforecast {{version:statsforecast}}, one window for one client took about 75 seconds. That was one run on MT_014 at the first standard cutoff. The subset needs 24 such windows, so one backtest of it would take about half an hour, against the 45 seconds the book allows an example. That is this book's own measurement, not an example in it, and it depends on the setup, so time it on your own machine before you plan a schedule around it. The fixed order costs one fit per window, the difference that matters here. Its weak point is a client whose pattern differs from the order's assumptions. The backtest is the check for that, and the [scores in the comparison section](#compare-models-on-the-same-cutoffs) are the place to look.
+On the book's pinned setup, two CPUs with statsforecast {{version:statsforecast}}, one window for one client took about 75 seconds. That was one run on MT_014 at the first standard cutoff. The subset needs 24 such windows, so one backtest of it would take about half an hour, against the 45 seconds the book allows an example. That is this book's own measurement, not an example in it, and it depends on the setup, so time it on your own machine before you plan a schedule around it. The fixed order costs one fit per window, which is the difference that matters here. Its weak point is a client whose pattern differs from the order's assumptions. The backtest is the check for that, and the [scores in the comparison section](#compare-models-on-the-same-cutoffs) are the place to look.
 
 A fixed order is a judgement, not a finding. We chose (1,0,0)(1,1,0) with a season of 24 because the data has a daily pattern and the backtests in this chapter need a model that finishes. The order sits in the call, where a reader can see it and change it. Later chapters compare against it on the same windows, so a change to the order shows up in the scores.
 
@@ -165,4 +159,4 @@ A fixed order is a judgement, not a finding. We chose (1,0,0)(1,1,0) with a seas
 - **Coverage for the two AutoETS runs only.** The ARIMA backtest is scored without intervals here.
 - **No fitted values quoted.** The ARIMA script prints parameter names only, and the flat-form check prints counts only. Errors are rounded to two decimals and coverage to three.
 - **A statistical baseline for Chapter 5.** The per-client AutoETS and ARIMA scores on these windows are the bar the gradient boosting model must beat.
-- **What to carry forward.** Check the chosen form before a score means anything, apply the start rule to any client that starts inside its history, and keep every candidate on the same windows, and add windows before choosing between two close models.
+- **What to carry forward.** A flat form can be a failed seasonal fit, so read the chosen forms beside every score. MAE and MASE can rank models differently, so say which one the decision needs. Start each series at its first reading, and add windows before choosing between close models.

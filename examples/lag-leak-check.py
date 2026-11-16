@@ -29,5 +29,5 @@ show("cutoffs", len(CUTOFFS))
 show("rows compared", shift_test(1)[0])  # the first value is the hours compared, the same for every lag
 for lag in (1, 24, 168):
     show(f"rows differing for lag {lag}", shift_test(lag)[1])
-show("MAE honest, lags 24 and 168", fit_window_mae(y, HONEST, CUTOFFS, leaky=False))  # leaky=False reads the cut history
+show("MAE honest, lags 24 and 168", fit_window_mae(y, HONEST, CUTOFFS, leaky=False))  # the table holds the lags and the hour of day; leaky=False reads the target lags from the cut history
 show("MAE leaky, lags 1, 24 and 168", fit_window_mae(y, LEAKY, CUTOFFS, leaky=True))  # leaky=True reads the whole series

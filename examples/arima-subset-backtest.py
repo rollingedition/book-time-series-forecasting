@@ -12,7 +12,7 @@ from lib.settings import EVAL_CUTOFFS, HORIZON, SEED, SUBSET8, show
 from lib.subsets import score_clients
 
 np.random.seed(SEED)                                        # the seed from lib/settings.py, set before any fit
-masked = mask_clock_changes(load(SUBSET8))                  # clock-change hours become NaN: never scored and never a training row
+masked = mask_clock_changes(load(SUBSET8))                  # clock-change hours become NaN, so they are never scored; filled_history fills them from their neighbours before each fit
 scale = book_scale(load(SUBSET8), EVAL_CUTOFFS[0])        # MASE scale: rows before the first cutoff, from each client's first reading
 # The order is fixed, not searched: one AR term, one seasonal difference and one seasonal AR term, all at lag 24.
 # n_jobs=1 keeps the output the same from run to run.

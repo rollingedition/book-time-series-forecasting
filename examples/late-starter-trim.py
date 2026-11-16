@@ -1,5 +1,5 @@
 """Backtest AutoETS for MT_115, a late starter, on three February cutoffs: once on its raw eight weeks and once on its history from its first reading.
-The start-rule counts and the three-window MAE lines, printed last, are the figures the prose quotes."""
+The start-rule counts, printed first, and the per-day and three-window MAE lines are the figures the prose quotes."""
 import numpy as np
 import pandas as pd
 from statsforecast import StatsForecast
@@ -25,7 +25,7 @@ masked = mask_clock_changes(load([LATE]))[["unique_id", "ds", "y", "quirk"]]
 def fit_and_score(hist, c):
     """Fit AutoETS on one history, forecast the day after c, and score it on that day."""
     sf = StatsForecast(models=[AutoETS(season_length=24)], freq="h", n_jobs=1)
-    sf.fit(df=fill_clock_change_hours(hist)[["unique_id", "ds", "y"]])   # clock hours filled from the history's neighbours, as elsewhere
+    sf.fit(df=fill_clock_change_hours(hist)[["unique_id", "ds", "y"]])   # clock-change hours filled from their neighbouring hours, as elsewhere
     fc = sf.predict(h=HORIZON)
     actual = masked[(masked["ds"] >= c) & (masked["ds"] < c + pd.Timedelta(hours=HORIZON))]   # the day's 24 readings, to score against
     joined = fc.merge(actual[["ds", "y"]], on="ds", how="left")
@@ -38,8 +38,9 @@ for c in CUTOFFS:
     raw_hist = history_before(masked, c)                     # the eight weeks before c, zeros included; it insists on exactly 1,344 rows
     # the share of hours that read zero, including the leading zeros before the first reading
     show(f"zero percent before {c:%Y-%m-%d}", round(100 * (raw_hist["y"] == 0).mean()))
+    # the start history begins at the first reading, so it is shorter wherever the client starts late
     for label, hist in [("raw", raw_hist), ("start", history_from_start(masked, c))]:
-        form, fc_mean, window_mae, actual_mean = fit_and_score(hist, c)   # the start history is shorter where the client starts late
+        form, fc_mean, window_mae, actual_mean = fit_and_score(hist, c)
         show(f"{label} history hours {c:%Y-%m-%d}", len(hist))
         show(f"{label} form {c:%Y-%m-%d}", form)
         show(f"{label} mean forecast {c:%Y-%m-%d}", fc_mean)
