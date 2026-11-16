@@ -150,7 +150,7 @@ A recorded forecast goes stale in a different way. The recording covers three cu
 
 A later model revision changes every number that depends on the recording, even when the code does not change. Treat the revision as an update trigger. Record it, score it on the same windows as the old one, and compare the two before the replacement recording is used. A package that changes its interpolation between versions changes the 95% range without touching the median, so the manifest's list of interpolated levels should be compared as well.
 
-A recorded forecast can also break the order of its own quantiles. The NHITS recording does, by a few kWh in a small number of rows. A range built from a crossed pair would be read as inverted. The check counts the crossings, and a consumer should sort or reject such rows before it uses them.
+A recorded forecast can also break the order of its own quantiles. The NHITS recording does in {{out:recorded-nhits-check:rows with quantiles out of order}} of its {{out:recorded-nhits-check:rows}} rows, by at most {{out:recorded-nhits-check:largest quantile crossing, kWh}} kWh. A range built from a crossed pair would be read as inverted. The check counts the crossings, and a consumer should sort or reject such rows before it uses them.
 
 Prophet's trend assumption fails when a client's demand moves to a different level, as it does after a change of contract or the loss of a large load. Prophet expects the trend to change as often as it did in the history, and its default interval does not cover the seasonal pattern. The sign is residuals that keep one sign across successive windows, and a coverage line that falls over them. The fix is a refit on a shorter history for that client, not a wider interval.
 
