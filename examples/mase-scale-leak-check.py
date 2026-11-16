@@ -34,6 +34,6 @@ whole = mase_scores(df, forecasts, BASELINES, masked_whole).loc[LEAD]
 for model, label in zip(BASELINES, LABELS):
     show(f"{label} MASE from history scale", hist[model])
     show(f"{label} MASE from whole-series scale", whole[model])
-    show(f"{label} MASE ratio whole-series over history", whole[model] / hist[model], digits=4)   # both MASEs share the same errors, so this ratio is the ratio of the two scales
+    show(f"{label} MASE ratio whole-series over history", whole[model] / hist[model], digits=4)   # both MASEs share the same errors, so this ratio is the history scale over the whole-series scale
 show("seasonal naive MASE from history scale at four decimals", hist["SeasonalNaive"], digits=4)   # two decimals hide the leak, so the last two lines print four
 show("seasonal naive MASE from whole-series scale at four decimals", whole["SeasonalNaive"], digits=4)

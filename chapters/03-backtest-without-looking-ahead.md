@@ -26,7 +26,7 @@ The Sunday sample runs seasonal naive over every Sunday of 2014, from Jan 5 to D
 
 [Example: backtest-sundays-2014](../examples/backtest-sundays-2014.py)
 
-Every window's history holds the same {{out:backtest-sundays-2014:history hours per series, min over windows}} hours for each client, the eight weeks the book specifies, and the example asserts that the length is the same in every window. The 52 windows score {{out:backtest-sundays-2014:scored hours}} hours: eight clients, 24 hours each, times the windows, less the hours of one late starter before its first reading, which the next paragraphs explain.
+Every window's history holds the same {{out:backtest-sundays-2014:history hours per series, min over windows}} hours for each client, the eight weeks the book specifies, and the example asserts that the length is the same in every window. The {{out:backtest-sundays-2014:windows}} windows score {{out:backtest-sundays-2014:scored hours}} hours: eight clients, 24 hours each, times the windows, less the hours of one late starter before its first reading, which the next paragraphs explain.
 
 The headline is the mean per-client MASE, not the pooled error. The MASE scale is one number per client, and `scoring.book_scale` computes it for the whole book: every reading before the first cutoff, with the clock-change hours masked and each client's leading zeros removed. The first cutoff is Jan 5, 2014, so this sample's scale is read from Jan 1, 2013 to Jan 4, 2014. The mean of the per-client MASE values is {{out:backtest-sundays-2014:mean MASE}}, with the lowest at {{out:backtest-sundays-2014:lowest client MASE}} and the highest at {{out:backtest-sundays-2014:highest client MASE}}, over {{out:backtest-sundays-2014:clients in MASE}} clients.
 
@@ -132,7 +132,7 @@ The test has two halves, and each catches what the other misses. Take the lead c
 
 [Example: leakage-shift-check](../examples/leakage-shift-check.py)
 
-The shifted mean is the one that leaks. On the history rows it differs on {{out:leakage-shift-check:rows differing for the peeking mean}} of the {{out:leakage-shift-check:rows compared}} compared, one at each cutoff: the last hour before each cutoff, whose value depends on the reading at the cutoff itself. The trailing mean differs on {{out:leakage-shift-check:rows differing for the trailing mean}} of them.
+On the history rows, the shifted mean differs on {{out:leakage-shift-check:rows differing for the peeking mean}} of the {{out:leakage-shift-check:rows compared}} compared, one at each cutoff: the last hour before each cutoff, whose value depends on the reading at the cutoff itself. The trailing mean differs on {{out:leakage-shift-check:rows differing for the trailing mean}} of them.
 
 The lag of one hour is the case the history half cannot catch. It differs on {{out:leakage-shift-check:rows differing for lag 1}} history rows, because every row it reads lies in the past, so the history half alone passes it.
 
@@ -168,4 +168,4 @@ Finally, a backtest that passes the shift test can still leak through the scale 
 - The headline is the mean per-client MASE, on the one scale of Chapter 2 through `scoring.book_scale`. Pooled MAE is the second line, with the largest client's share printed.
 - A client with no reading before the first cutoff is left out of MASE. A late starter's hours before its first reading are left out of every score. Chapter 4 owns the start rule for histories.
 - The shift test runs on every feature, both halves. Every lag is at least the horizon, and a feature that differs at any cutoff is not used.
-- Every printed value the prose quotes is a labelled line that the prose binds to. When a library update changes a number, the build changes the chapter's figure, and nobody retypes it.
+- The examples print labelled lines, and the prose binds to them. When a library update changes a number, the build changes the chapter's figure, and nobody retypes it.

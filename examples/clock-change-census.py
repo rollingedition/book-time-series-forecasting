@@ -5,7 +5,7 @@ from lib.quirks import clock_ratios
 from lib.settings import show
 
 r = clock_ratios(load())  # each clock-change hour divided by the mean of the hour before and the hour after
-gap = r[r["quirk"] == "clock_change_gap"]  # the file's flag: 01:00 is missing on the March change day
+gap = r[r["quirk"] == "clock_change_gap"]  # the file's flag: 01:00 on the March change day, an hour the clock skips
 repeat = r[r["quirk"] == "clock_change_repeat"]  # the file's flag: 01:00 holds two hours on the October change day
 show("gap rows", len(gap))
 show("gap rows that read zero", int((gap["y"] == 0).sum()))

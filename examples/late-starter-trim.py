@@ -1,5 +1,5 @@
 """Backtest AutoETS for MT_115, a late starter, on three February cutoffs: once on its raw eight weeks and once on its history from its first reading.
-The start-rule counts, printed first, and the per-day and three-window MAE lines are the figures the prose quotes."""
+The start-rule counts, printed first, and the three-window MAE lines are the figures the point rests on."""
 import numpy as np
 import pandas as pd
 from statsforecast import StatsForecast
@@ -23,7 +23,7 @@ masked = mask_clock_changes(load([LATE]))[["unique_id", "ds", "y", "quirk"]]
 
 
 def fit_and_score(hist, c):
-    """Fit AutoETS on one history, forecast the day after c, and score it on that day."""
+    """Fit AutoETS on one history, forecast the 24 hours from c, and score it on those hours."""
     sf = StatsForecast(models=[AutoETS(season_length=24)], freq="h", n_jobs=1)
     sf.fit(df=fill_clock_change_hours(hist)[["unique_id", "ds", "y"]])   # clock-change hours filled from their neighbouring hours, as elsewhere
     fc = sf.predict(h=HORIZON)

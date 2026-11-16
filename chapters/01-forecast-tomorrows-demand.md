@@ -49,11 +49,15 @@ The lead client has readings in every hour of the window, so none of its rows ar
 
 [Example: load-lead-client](../examples/load-lead-client.py)
 
-Every client in the file has its full two years, so no hour is missing from it. Two years of hours is {{out:load-lead-client:rows}} rows, and the lead client's run from {{out:load-lead-client:first reading}} to {{out:load-lead-client:last reading}}. A window with fewer hours than its history should hold has a gap, and the gap would be the first thing to explain.
+The file holds {{out:load-lead-client:clients in the file}} clients. The lead client has {{out:load-lead-client:rows}} rows, from {{out:load-lead-client:first reading}} to {{out:load-lead-client:last reading}}.
 
-A forecast needs history. The book's history is 8 weeks. The shortest history in the held-out week has {{out:load-lead-client:history rows per window}} rows, and the longest has {{out:load-lead-client:longest history rows}}, so every cutoff gets exactly that much before it. For the first cutoff of the held-out week, the history begins at {{out:load-lead-client:first history reading}}. That is after the clock change of Oct 26, 2014, which the data card dates. So none of the 7 histories holds a clock-change hour, and the example counts {{out:load-lead-client:clock-change rows in held-out histories}} clock-change rows across all seven.
+Two years of hours is {{out:load-lead-client:rows}} rows for each client, and {{out:load-lead-client:clients with 17520 rows}} of {{out:load-lead-client:clients in the file}} clients have exactly that many, so no hour is missing from the file for those clients. A window with fewer hours than its history should hold has a gap, and the gap would be the first thing to explain. Check the client count and the row count against the card.
 
-The rest of this chapter can leave the clock-change rows alone for that reason, and Chapter 4 meets the late starter.
+A forecast needs history. The book's history is 8 weeks, which is {{out:load-lead-client:history rows per window}} hours, and each cutoff in the held-out week gets exactly that much before it. The shortest history has {{out:load-lead-client:history rows per window}} rows, and the longest has {{out:load-lead-client:longest history rows}}.
+
+For the first cutoff of the held-out week, the history begins at {{out:load-lead-client:first history reading}}. That is after the clock change of Oct 26, 2014, which the data card dates. So none of the 7 histories holds a clock-change hour, and the example counts {{out:load-lead-client:clock-change rows in held-out histories}} clock-change rows across all seven.
+
+The rest of this chapter can leave the clock-change rows alone for that reason. Chapter 3 meets them, and Chapter 4 meets the late starter.
 
 **Working rule:** Choose the client and the window first, then count the quirks in that window's history before any model sees it. If a history holds a clock-change label or a `before_first_reading` row, do not hand it to a model unchanged, because the model will read the label's value as demand. Chapter 3 and Chapter 4 give the rules for those rows. A window that holds neither can use its rows as they are, as this chapter does.
 
@@ -108,10 +112,9 @@ Read the table against the mean demand of {{out:seasonal-naive-next-day:mean dem
 | SeasonalNaive | {{out:seasonal-naive-next-day:MAE}} | {{out:seasonal-naive-next-day:RMSE}} |
 | AutoETS | {{out:autoets-next-day:MAE}} | {{out:autoets-next-day:RMSE}} |
 
-AutoETS's errors are higher than the baseline's on both scores, as the table shows, with MAE at {{out:autoets-next-day:MAE}} kWh against {{out:seasonal-naive-next-day:MAE}}. The MAE is the number to plan with, because it is the typical miss in each hour. RMSE is always at least MAE. For normal errors, a rule of thumb for misses centred on zero, RMSE is about 1.25 times MAE, so a ratio well above that means a few large misses. This section reads the two scores together and goes no further, because one client over one week cannot show the spread of the misses.
+AutoETS's errors are higher than the baseline's on both scores, as the table shows, with MAE at {{out:autoets-next-day:MAE}} kWh against {{out:seasonal-naive-next-day:MAE}}. The MAE is the number to plan with, because it is the typical miss in each hour. RMSE is always at least MAE. For normal errors RMSE is about 1.25 times MAE, so a ratio well above that means a few large misses. This section reads the two scores together and goes no further, because one client over one week cannot show the spread of the misses.
 
-Both models do worst around Christmas, but on different days. The daily lines show where: the baseline's worst day is Dec 26, the day after Christmas, when it copies Christmas Day, at {{out:seasonal-naive-next-day:MAE 2014-12-26}} kWh an hour, the largest of the 7. AutoETS's worst day is Dec 25 itself, at {{out:autoets-next-day:MAE 2014-12-25}} kWh, against {{out:seasonal-naive-next-day:MAE 2014-12-25}} for the baseline. The rest of the daily lines are in the two outputs.
-
+Both models do worst around Christmas, but on different days. The daily lines show where: the baseline's worst day is Dec 26, the day after Christmas, when it copies Christmas Day, at {{out:seasonal-naive-next-day:MAE 2014-12-26}} kWh an hour, the largest of the 7. AutoETS's worst day is Dec 25 itself, at {{out:autoets-next-day:MAE 2014-12-25}} kWh, against {{out:seasonal-naive-next-day:MAE 2014-12-25}} for the baseline.
 A gap of this size on one client over one week is not a verdict. Seven forecasts make a small sample, and a ranking built on one week can flip on the next. Chapter 3 backtests seasonal naive over a year of Sunday cutoffs.
 
 The score also has to match the decision, and the purchase is lopsided: as [the case](#the-case-and-its-data) says, buying too little costs more than buying too much. MAE and RMSE treat a miss in either direction alike, because they use the size of each miss and not its sign. That is enough for this chapter, which asks whether a forecast is close. It is not enough for the purchase. Chapter 8 builds ranges for that decision, and scores them against what happened.
@@ -122,7 +125,7 @@ The score also has to match the decision, and the purchase is lopsided: as [the 
 
 The forecasts and scores above can go wrong in 5 ways, and only some of them print an error. The [cutoff rule](#the-case-and-its-data) and the [seasonal naive rule](#forecast-with-seasonal-naive) say what each window must hold.
 
-A label that is off by an hour is the one trap no score in this chapter can catch. If a reader takes `ds` as the end of its hour rather than the start, the forecasts and the readings they are scored against carry the same shift, so the score does not change. The error is in the purchase instead: the forecast would cover different hours from the ones the supplier buys for. The data card fixes the label, so it is the first thing to check when a forecast is moved to new data.
+The first failure is a label that is off by an hour, and no score in this chapter detects it. If a reader takes `ds` as the end of its hour rather than the start, the forecasts and the readings they are scored against carry the same shift, so the score does not change. The error is in the purchase instead: the forecast would cover different hours from the ones the supplier buys for. The data card fixes the label, so it is the first thing to check when a forecast is moved to new data.
 
 Leakage flatters a window whose history includes the hours it predicts, and nothing in the score says so. [Hewamalage, Ackermann and Bergmeir (2022)](https://arxiv.org/abs/2203.10716) warn that rolling-origin evaluation is prone to this leak when it is not done with care. The checks here are the cutoff rule and the history length. Each history must end before its cutoff and hold {{out:load-lead-client:history rows per window}} rows. `history_before` raises an error when a history is short or long. A history with one hour removed is refused: the check at the end of the seasonal naive example prints {{out:seasonal-naive-next-day:history with one hour removed refused}} for it.
 
@@ -136,7 +139,7 @@ Last, the window itself can flatter the method. A week with no unusual days can 
 
 ## Decisions this chapter made {#decisions-ch1}
 
-This chapter made 9 choices. Most are settings in `examples/lib/settings.py`, so a later edition that changes one changes it in every chapter that uses it. The rest are stated in the data card or in this chapter. Chapter 2 starts from these two forecasts and their two scores, and asks whether either is good enough to act on. Keep one habit from this chapter above the rest: no forecast score means anything until a baseline has been scored on the same windows.
+This chapter made 9 choices. Most are settings in `examples/lib/settings.py`, so a later edition that changes one changes it in every chapter that uses it. The rest are stated in the data card or in this chapter. Chapter 2 starts from these two forecasts and their two scores, and asks whether either is good enough to act on.
 
 - Each window's cutoff is at 00:00 on the day it predicts, and the horizon is 24 hours, so each window covers that day.
 - The history before each cutoff is {{out:load-lead-client:history rows per window}} hours, which is 8 weeks.
