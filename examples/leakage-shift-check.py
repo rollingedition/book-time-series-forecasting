@@ -7,8 +7,8 @@ from lib.settings import EVAL_CUTOFFS, LEAD, show
 y = load([LEAD]).set_index("ds")["y"]  # indexed by timestamp, so each feature can be cut at a cutoff by time
 
 compared, honest = history_test(y, trailing_mean)  # rows compared, and the rows where cutting at the cutoff changes the feature
-_, peeking = history_test(y, peeking_mean)  # the leaking feature: the same count, which reads the reading at the cutoff
-_, lag1_history = history_test(y, lag(1))
+_, peeking = history_test(y, peeking_mean)  # the leaking feature: its last value before each cutoff reads the cutoff hour
+_, lag1_history = history_test(y, lag(1))  # lag 1 reads only the past on history rows, so this half passes it
 show("cutoffs", len(EVAL_CUTOFFS))
 show("rows compared", compared)
 show("rows differing for the trailing mean", honest)

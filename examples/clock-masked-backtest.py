@@ -1,6 +1,6 @@
 """The Sunday backtest of 2014 for eight clients, scored twice: as the readings stand, and with the clock-change rule, which
-leaves the masked hours out of the scores and fills the history. The prose's comparison rests on the two mean MASE lines
-and on the masked-hour count."""
+leaves the masked hours out of the scores and fills the history. The prose's comparison rests on the masked-hour count,
+the two pooled MAE lines, the two mean MASE lines and the two scored-hour lines."""
 import pandas as pd
 
 from lib.backtest import history_before

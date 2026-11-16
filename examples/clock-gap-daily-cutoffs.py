@@ -1,5 +1,6 @@
 """Seasonal naive around the March clock change, for eight clients: the raw failure, then the rule. The prose's claims rest
-on the next-day 1am lines, with and without the rule, and on the count of missing forecasts without the fill."""
+on the gap-hour and next-day 1am lines, with and without the rule, the median client ratios, and the count of missing
+forecasts without the fill."""
 import pandas as pd
 
 from lib.backtest import history_before
@@ -19,8 +20,10 @@ show("gap hours in actuals", int(gap.sum()))
 show("gap hours that read zero", int((raw[gap]["y"] == 0).sum()))
 show("gap-hour MAE with no rule", mae_of(raw[gap]))
 show("other-hour MAE with no rule", mae_of(raw[~gap]))
+# per client: the mean error at gap hours over the mean at other hours, then the median across clients
 show("median client ratio, gap hour to other hours, no rule", median_client_ratio(raw, gap, ~gap))
 show("next-day MAE at 1am with no rule", mae_of(raw[at_next_day]))
+# a forecast of exactly zero is the March zero copied forward from the day before
 show("next-day 1am forecasts that are zero, no rule", int((raw[at_next_day]["SeasonalNaive"] == 0).sum()))
 show("median client ratio, next-day 1am to other hours, no rule", median_client_ratio(raw, at_next_day, ~gap))
 

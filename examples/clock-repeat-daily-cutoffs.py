@@ -1,5 +1,5 @@
 """Seasonal naive around the October clock change, for eight clients: the raw failure, then the rule. The prose's claims rest
-on the repeat-hour and next-day 1am lines, and on the count of missing forecasts without the fill."""
+on the repeat-hour and next-day 1am lines, the median client ratios, and the count of missing forecasts without the fill."""
 import pandas as pd
 
 from lib.backtest import history_before
@@ -18,6 +18,7 @@ at_next_day = raw["ds"] == next_day
 show("repeat hours in actuals", int(repeat.sum()))
 show("repeat-hour MAE with no rule", mae_of(raw[repeat]))
 show("other-hour MAE with no rule", mae_of(raw[~repeat]))
+# per client: the mean error at the repeat hour over the mean at other hours, then the median across clients
 show("median client ratio, repeat hour to other hours, no rule", median_client_ratio(raw, repeat, ~repeat))
 show("next-day MAE at 1am with no rule", mae_of(raw[at_next_day]))
 show("median client ratio, next-day 1am to other hours, no rule", median_client_ratio(raw, at_next_day, ~repeat))

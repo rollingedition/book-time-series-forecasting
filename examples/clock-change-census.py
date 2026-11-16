@@ -1,5 +1,5 @@
 """The clock-change hours of all thirty clients, each against its neighbours. The point that the March hours read near zero
-rests on the line counting gap rows below 5 percent of their neighbours."""
+rests on the gap rows below 5 percent of their neighbours, with the zero count and the median ratio beside them."""
 from lib.electricity import load
 from lib.quirks import clock_ratios
 from lib.settings import show

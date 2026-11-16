@@ -1,5 +1,6 @@
 """One window's history, cut by its cutoff: its first and last timestamps, and what a cut that keeps the cutoff hour adds.
-The prose's off-by-one point rests on the last two lines."""
+The prose's timestamps rest on the first two lines, and its off-by-one point on the row counts
+with the cutoff hour in and out."""
 import pandas as pd
 
 from lib.backtest import history_before
