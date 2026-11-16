@@ -12,11 +12,11 @@ from lib.totals import (DIRECT_SCALED, METHODS, TOTAL, direct_windows, plain_mae
                         total_forecasts, total_frame, total_scale_rows)
 
 raw = load(ALL30)
-total = total_frame(raw)
+total = total_frame(raw)  # the hourly sum of the thirty clients, after the start rule; missing in a clock-change hour
 dec, cut = pd.to_datetime(DECISION_CUTOFFS), pd.to_datetime(EVAL_CUTOFFS)
 
 dec_actual = actual_hours(total, dec)
-# the direct model here uses the target setting the book chose, DIRECT_SCALED
+# the direct model here uses the target setting the book chose: DIRECT_SCALED is False, so the direct total is unscaled
 dec_mae = pooled_mae(dec_actual, total_forecasts(raw, dec), ["bottom-up", "direct"])
 # the direct model's MAE with its target scaled (True) and unscaled (False)
 direct_setting = {s: pooled_mae(dec_actual, direct_windows(raw, dec, scaled=s), ["direct"])["direct"]
@@ -31,7 +31,7 @@ show("MAE bottom-up, decision windows", dec_mae["bottom-up"])
 show("MAE direct, decision windows", dec_mae["direct"])
 show("MAE direct with a scaled target, decision windows", direct_setting[True])
 show("chosen direct target", "unscaled" if not DIRECT_SCALED else "scaled")
-# the bottom-up total with the client identifier removed: the model Chapter 6 compares with
+# the bottom-up total without the client identifier, which Chapter 6 also tried
 show("MAE bottom-up without identifier, decision windows", plain_mae(raw, dec))
 show("chosen total method", dec_mae.idxmin())
 

@@ -11,7 +11,7 @@ from lib.totals import SPLIT_METHODS, client_mae, oracle_split_mae, shares, spli
 raw = load(ALL30)
 dec, cut = pd.to_datetime(DECISION_CUTOFFS), pd.to_datetime(EVAL_CUTOFFS)
 
-# the third value, the hours where the top-down clients miss the direct total, is not needed here
+# the third value, the hours the top-down clients don't add up to the direct total (none, by construction), is unused
 dec_scored, dec_per, _ = split_scored(raw, dec)
 show("decision holiday hours", check_decision_hours(dec_scored))
 show("mean per-client MASE bottom-up, decision windows", dec_per["bottom-up"].mean())
@@ -30,6 +30,8 @@ show("clients where top-down has the lower MAE", int((mae["top-down"] < mae["bot
 # the split applied to the actual total: a reference, since no forecast can know the total in advance
 show("mean per-client MAE with the true total split by share", oracle_split_mae(raw, cut))
 # the first standard cutoff, Dec 29, 2014; its shares read only the history before it
+# shares read the 1,344 hours (8 weeks) before the cutoff
 show("largest client share of the total, first cutoff", shares(raw, cut[0]).max())
+# each cutoff's readings from the cutoff on replaced by zero, then by a very large value
 for label, value in split_checks(raw, cut).items():
     show(label, value)
