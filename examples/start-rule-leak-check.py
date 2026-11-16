@@ -8,7 +8,7 @@ from lib.panel import ALL30, FEBRUARY_CUTOFFS, leaky_history, panel_history, sta
 from lib.settings import EVAL_CUTOFFS, show
 
 raw = load(ALL30)
-# nine cutoffs: three around the late starters' first readings, the three February cutoffs and the three standard ones
+# nine cutoffs: three around MT_179's and MT_115's first readings (refused), the February cutoffs and the standard cutoffs
 CHECKED = pd.DatetimeIndex(["2013-12-15", "2014-01-01", "2014-01-15", *FEBRUARY_CUTOFFS, *EVAL_CUTOFFS])
 
 

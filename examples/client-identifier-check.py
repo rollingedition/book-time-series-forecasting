@@ -18,7 +18,7 @@ models = ["plain", "identifier"]
 # the MASE scale reads only the readings before the first decision cutoff, so the scored hours cannot leak into it
 scored, per_client = score_windows(actual, plain.merge(identified, on=["unique_id", "ds"], validate="one_to_one"),
                                    models, book_scale(raw, cutoffs[0]))
-lowers = per_client["identifier"] < per_client["plain"]       # one True per client where the identifier's MASE is smaller
+lowers = per_client["identifier"] < per_client["plain"]
 size = raw.groupby("unique_id")["y"].mean().sort_values(ascending=False)   # mean kWh per client, largest first
 contrib = mae_change(scored, "plain", "identifier")           # each client's share of the pooled MAE change, kWh; the shares sum to the total
 
@@ -30,8 +30,8 @@ show("scored hours", len(scored))
 show("decision hours on a holiday", holiday_hours)
 report_scores(scored, per_client, models)
 show("clients where the identifier lowers MASE", int(lowers.sum()))
-show("of the 15 largest clients, where the identifier lowers MASE", int(lowers[size.index[:15]].sum()))   # the fifteen largest
-show("of the 15 smallest clients, where the identifier lowers MASE", int(lowers[size.index[-15:]].sum()))  # the fifteen smallest
+show("of the 15 largest clients, where the identifier lowers MASE", int(lowers[size.index[:15]].sum()))
+show("of the 15 smallest clients, where the identifier lowers MASE", int(lowers[size.index[-15:]].sum()))
 show("largest client", size.index[0])
 show("pooled MAE change from the largest client, kWh", contrib[size.index[0]])
 show("pooled MAE change, all clients, kWh", contrib.sum())
