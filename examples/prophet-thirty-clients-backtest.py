@@ -35,7 +35,7 @@ report_subset(per_client, models)
 report_range(scored, "Prophet", "ProphetLo", "ProphetHi", PROPHET_LEVEL)
 # Sensitivity only, not used to choose: the holiday table on the same cutoffs, which the decision windows
 # did not favour.
-# Two processes here too; the fits are the same at any count.
+# two processes; each fit is the same at any worker count
 on = prophet_windows(df, cutoffs, use_holidays=True, workers=2)[["unique_id", "ds", "Prophet"]].rename(
     columns={"Prophet": "ProphetHolidays"})
 per_holiday, _ = score(raw, forecasts.merge(on, on=["unique_id", "ds"], validate="one_to_one"),

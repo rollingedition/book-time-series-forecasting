@@ -32,5 +32,5 @@ report_subset(per_client, models)
 report_pinball(scored, "Chronos", "q10", 0.1)                       # quantile loss at tau 0.1: the 0.1 quantile column
 report_pinball(scored, "Chronos", "q50", 0.5)                       # at tau 0.5 the loss is half the absolute error
 report_pinball(scored, "Chronos", "q90", 0.9)
-report_range(scored, "Chronos", "q10", "q90", 80)                   # the 80% range: the 0.1 and 0.9 quantiles
-report_range(scored, "Chronos", "q025", "q975", 95)                 # the 95% range: the 0.025 and 0.975 quantiles
+report_range(scored, "Chronos", "q10", "q90", 80)
+report_range(scored, "Chronos", "q025", "q975", 95)

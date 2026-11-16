@@ -6,7 +6,7 @@ chapter_id: compare-prophet-and-a-foundation-model
 
 Once you finish this chapter, you can fit Prophet on the book's three standard cutoffs, load a recorded foundation model (Chronos-2) and a recorded neural model (NHITS), and score all of them on one MASE scale against the same readings.
 
-Readers meet Prophet and neural forecasting models outside this book, each with its own claims. The question for an electricity supplier that must commit tomorrow's purchases today (the supplier from here on) is which of these models earns a place in its forecast. The supplier needs something narrower from any model: a day-ahead forecast for each client, and a range it can buy against. Chapter 8 calibrated such ranges on earlier windows, and the ranges here are not calibrated that way, so this chapter checks their coverage and does not fix it. It scores every model on the standard cutoffs, Dec 29 to 31, 2014, against seasonal naive from [Chapter 2](#three-baselines-to-beat) and the global model from [Chapter 6](#one-model-for-many-clients), on the same hours and one MASE scale. Two of the models are recorded rather than run.
+Readers meet Prophet and neural forecasting models outside this book, each with its own claims. For an electricity supplier that buys its power a day ahead, the question is which of these models earns a place in its forecast. The supplier needs something narrower from any model: a day-ahead forecast for each client, and a range it can buy against. It scores every model on the standard cutoffs, Dec 29 to 31, 2014, against seasonal naive from [Chapter 2](#three-baselines-to-beat) and the global model from [Chapter 6](#one-model-for-many-clients), on the same hours and one MASE scale. Two of the models are recorded rather than run.
 
 ## Where Prophet fits {#where-prophet-fits}
 
@@ -30,9 +30,11 @@ We chose the holiday table on decision windows, not on the standard cutoffs. The
 
 [Example: prophet-holiday-decision](../examples/prophet-holiday-decision.py)
 
-On the holiday windows the table makes Prophet worse. Its mean per-client MASE is {{out:prophet-holiday-decision:mean MASE WithHolidays}} with the table and {{out:prophet-holiday-decision:mean MASE NoHolidays}} without it, against {{out:prophet-holiday-decision:mean MASE SeasonalNaive}} for seasonal naive, so the table stays off. A setting is kept only if it lowers the decision-window MASE, and a tie keeps the simpler model.
+On the decision windows the table makes Prophet worse. Over the eleven of them, its mean per-client MASE is {{out:prophet-holiday-decision:mean MASE WithHolidays}} with the table and {{out:prophet-holiday-decision:mean MASE NoHolidays}} without it, against {{out:prophet-holiday-decision:mean MASE SeasonalNaive}} for seasonal naive.
 
-The table can change a forecast only on holiday hours. It changes {{out:prophet-holiday-decision:hours where the forecasts differ}} of the {{out:prophet-holiday-decision:holiday hours in the decision windows}} holiday hours in these windows, and no hour of the four ordinary windows.
+A setting is kept only if it lowers the decision-window MASE, and a tie keeps the simpler model. The example's verdict on keeping the table is {{out:prophet-holiday-decision:holiday table kept}}, so the table stays off.
+
+The holiday windows hold {{out:prophet-holiday-decision:holiday hours in the decision windows}} client-hours of holiday, and they are the only place the table can change a forecast. {{out:prophet-holiday-decision:hours where the forecasts differ}} of the {{out:prophet-holiday-decision:scored hours}} scored hours differ between the two variants.
 
 The standard cutoffs tell a different story, which we report without using it to choose. Their histories include Christmas Day, and the holiday windows' histories do not. That is a likely reason for the gap, but we did not test which holiday causes it. With the table on, Prophet's mean per-client MASE on the standard cutoffs would be {{out:prophet-thirty-clients-backtest:mean MASE Prophet with holidays, not chosen}}, against {{out:prophet-thirty-clients-backtest:mean MASE Prophet}} with it off. A team that wants the table should test it on its own decision windows before it scores anything.
 
@@ -42,13 +44,11 @@ Every model is scored on [the book's one MASE scale](#take-the-mase-scale-from-h
 
 [Example: prophet-thirty-clients-backtest](../examples/prophet-thirty-clients-backtest.py)
 
-On these cutoffs Prophet has a higher mean per-client MASE than seasonal naive, on average and on most clients: {{out:prophet-thirty-clients-backtest:mean MASE Prophet}} over the thirty clients, against {{out:prophet-thirty-clients-backtest:mean MASE SeasonalNaive}} for seasonal naive and {{out:prophet-thirty-clients-backtest:mean MASE Global}} for the global model.
+On these cutoffs Prophet has a higher mean per-client MASE than seasonal naive: {{out:prophet-thirty-clients-backtest:mean MASE Prophet}} over the thirty clients, against {{out:prophet-thirty-clients-backtest:mean MASE SeasonalNaive}} for seasonal naive and {{out:prophet-thirty-clients-backtest:mean MASE Global}} for the global model.
 
-The mean hides the spread. Prophet beats seasonal naive on {{out:prophet-thirty-clients-backtest:clients where Prophet beats seasonal naive}} of the thirty clients, and the global model on {{out:prophet-thirty-clients-backtest:clients where Prophet beats the global model}}.
+The loss is on most clients too, not only on average: Prophet beats seasonal naive on only {{out:prophet-thirty-clients-backtest:clients where Prophet beats seasonal naive}} of the thirty clients, and the global model on {{out:prophet-thirty-clients-backtest:clients where Prophet beats the global model}}.
 
 Pooled over every scored hour, Prophet's RMSE is {{out:prophet-thirty-clients-backtest:RMSE Prophet}} kWh, against {{out:prophet-thirty-clients-backtest:RMSE SeasonalNaive}} for seasonal naive, so it makes fewer very large misses. It loses to seasonal naive on MAE and MASE, and to the global model on every measure. Its 95% interval covers {{out:prophet-thirty-clients-backtest:coverage 95 Prophet}} of the readings, and its interval score is {{out:prophet-thirty-clients-backtest:interval score 95 Prophet}}. Coverage below 0.95 means the interval is too narrow for its stated level on these hours.
-
-That is a result for these cutoffs and this data, and not a claim about Prophet in general.
 
 **Working rule:** Set Prophet's seasonality, holidays and interval width in code before you score it, and choose any of them on decision windows, never on the standard cutoffs. Keep the holiday table only if it lowers the MASE on the holiday decision windows. Compare Prophet with seasonal naive and the global model on the same windows and the same scale, and list the clients it loses. Set the seed before each predict, and check that a second run prints the same lines.
 
@@ -86,7 +86,7 @@ The recordings mean something only when they are scored on the same hours as Pro
 
 A forecast with five quantiles can be scored in two ways. The median, the 0.5 quantile, is a point forecast, scored with MASE on the book's scale. The 0.1 and 0.9 quantiles form an 80% range, and the 0.025 and 0.975 quantiles form a 95% range. Each range is scored by coverage, the share of readings inside it, and by the interval score, which adds the width to a penalty for each reading outside it. The penalty is 2 divided by the nominal miss rate, 0.05 for a 95% range, times the distance outside. [Chapter 8](#calibrate-on-earlier-windows) defines the interval score with its source. Each quantile is also scored by its quantile loss, which charges tau for each kWh a reading falls above the quantile and one minus tau for each kWh below it ([Chapter 8](#choose-the-level-from-the-cost-of-error)).
 
-Two examples score the recordings, one for each model, on the same thirty clients, cutoffs and MASE scale as the Prophet run. Each rebuilds the global model and seasonal naive instead of copying them from Chapter 6, so every model goes through one scoring path.
+Two examples score the recordings, one for each model, on the same thirty clients, cutoffs and MASE scale as [the Prophet run](#run-prophet-on-the-same-cutoffs). Each rebuilds the global model and seasonal naive instead of copying them from Chapter 6, so every model goes through one scoring path.
 
 [Example: recorded-chronos2-score](../examples/recorded-chronos2-score.py)
 
@@ -100,9 +100,9 @@ Two examples score the recordings, one for each model, on the same thirty client
 | NHITS, median | {{out:recorded-nhits-score:mean MASE NHITS}} | {{out:recorded-nhits-score:mean MASE NHITS SUBSET8}} | {{out:recorded-nhits-score:MAE NHITS}} |
 | Prophet, point forecast | {{out:prophet-thirty-clients-backtest:mean MASE Prophet}} | {{out:prophet-thirty-clients-backtest:mean MASE Prophet SUBSET8}} | {{out:prophet-thirty-clients-backtest:MAE Prophet}} |
 
-Chronos-2 has the lowest mean per-client MASE of the five models on both sets of clients: {{out:recorded-chronos2-score:mean MASE Chronos}} over the thirty clients and {{out:recorded-chronos2-score:mean MASE Chronos SUBSET8}} on SUBSET8. It beats seasonal naive on {{out:recorded-chronos2-score:clients where Chronos beats seasonal naive}} of the thirty clients. The global model from Chapter 6 is second on both sets, and [Chapter 4's fixed seasonal ARIMA](#fit-a-fixed-seasonal-arima), on the same eight clients, cutoffs and scale, scores {{out:arima-subset-backtest:MASE ARIMA}} on SUBSET8, between the global model and seasonal naive.
+Chronos-2 has the lowest mean per-client MASE of the five models on both sets of clients: {{out:recorded-chronos2-score:mean MASE Chronos}} over the thirty clients and {{out:recorded-chronos2-score:mean MASE Chronos SUBSET8}} on SUBSET8. It beats seasonal naive on {{out:recorded-chronos2-score:clients where Chronos beats seasonal naive}} of the thirty clients. The global model from Chapter 6 is second on both sets. [Chapter 4's fixed seasonal ARIMA](#fit-a-fixed-seasonal-arima), on the same eight clients, cutoffs and scale, scores {{out:arima-subset-backtest:MASE ARIMA}} on SUBSET8, between the global model and seasonal naive.
 
-NHITS is third on the thirty clients and fourth on SUBSET8, where it is narrowly behind seasonal naive: {{out:recorded-chronos2-score:mean MASE SeasonalNaive SUBSET8}} against {{out:recorded-nhits-score:mean MASE NHITS SUBSET8}}. Prophet has the highest mean on both sets.
+NHITS is third on the thirty clients and fourth on SUBSET8, where it is narrowly behind seasonal naive, {{out:recorded-nhits-score:mean MASE NHITS SUBSET8}} against {{out:recorded-chronos2-score:mean MASE SeasonalNaive SUBSET8}}. Prophet has the highest mean on both sets.
 
 The lead needs its caveat. Chronos-2's pretraining corpus includes this dataset ([the recording section](#load-a-recorded-foundation-model)), so these readings may have been part of its training, and its score here is an upper bound on what to expect on readings it has not seen. NHITS has no such advantage, because each of its cutoffs was trained only on that cutoff's own context. NHITS trails Chronos-2 on the same hours, but the two are not on equal footing, and this chapter does not rank them on this comparison.
 
@@ -112,11 +112,9 @@ Chronos-2's 95% range covers {{out:recorded-chronos2-score:coverage 95 Chronos}}
 
 Prophet's 95% range has an interval score a little lower than Chronos-2's, {{out:prophet-thirty-clients-backtest:interval score 95 Prophet}} against {{out:recorded-chronos2-score:interval score 95 Chronos}}, but its coverage of {{out:prophet-thirty-clients-backtest:coverage 95 Prophet}} sits further from its level.
 
-NHITS's ranges are too narrow for their levels on these hours. Its 80% range covers {{out:recorded-nhits-score:coverage 80 NHITS}} of the readings, and its 95% range covers {{out:recorded-nhits-score:coverage 95 NHITS}}. Its 95% interval score, {{out:recorded-nhits-score:interval score 95 NHITS}}, is the highest of the three 95% ranges. Its quantiles are trained directly, so no range is interpolated.
+NHITS's ranges are too narrow for their levels on these hours. Its 80% range covers {{out:recorded-nhits-score:coverage 80 NHITS}} of the readings, and its 95% range covers {{out:recorded-nhits-score:coverage 95 NHITS}}. Its 95% interval score, {{out:recorded-nhits-score:interval score 95 NHITS}}, is the highest of the three 95% ranges. Its quantiles are trained directly, so no range is interpolated. The recording does not put its quantiles in order, though. The check counts {{out:recorded-nhits-check:rows with quantiles out of order}} of the {{out:recorded-nhits-check:rows}} rows with an adjacent pair out of order, by at most {{out:recorded-nhits-check:largest quantile crossing, kWh}} kWh, and {{out:recorded-nhits-check:inverted 80 or 95 ranges}} inverted 80% or 95% ranges. The scores use the values as recorded.
 
-The recording does not put its quantiles in order, though. The check counts {{out:recorded-nhits-check:rows with quantiles out of order}} of the {{out:recorded-nhits-check:rows}} rows with an adjacent pair out of order, by at most {{out:recorded-nhits-check:largest quantile crossing, kWh}} kWh, and {{out:recorded-nhits-check:inverted 80 or 95 ranges}} inverted 80% or 95% ranges. The scores use the values as recorded.
-
-Three limits apply. These are three cutoffs in one week of one dataset, so the results are not a general claim about any model. Neither range was calibrated on the calibration windows that Chapter 8 used, so the coverage here is a check, not a calibration. The comparison makes no choice: decisions in this book are made on decision windows, and the recordings have no forecasts there, so nothing is picked with these scores.
+Three limits apply. These are three cutoffs in one week of one dataset, so the results are not a general claim about any model. Neither range was calibrated on the calibration windows that Chapter 8 used, so the coverage here is a check, not a calibration. The comparison makes no choice, because decisions in this book are made on decision windows, and the recordings have no forecasts there, so nothing is picked with these scores.
 
 **Working rule:** Score a recorded forecast on the same windows, the same scale and the same readings as every other model, and name any interpolated quantile wherever its range is reported. Before you read a lead, check what the model was trained on, because a model that saw the scored readings cannot show skill on them. Do not choose a model or a setting on these windows. A recorded forecast with no forecasts on the decision windows cannot be chosen for production until it has them.
 
@@ -126,17 +124,17 @@ This edition runs no neural model. Its two neural forecasts are recorded, and th
 
 NHITS is a neural forecaster from the neuralforecast library, which packages neural forecasters for panels of series. The library is Apache-2.0 ([neuralforecast metadata](https://pypi.org/pypi/neuralforecast/3.3.0/json)). We record NHITS the way Chronos-2 is recorded, with its own script, pinned version and manifest, and score it beside Chronos-2 on the same contexts, cutoffs, scale and metrics. Its recording trains once for each cutoff on the same thirty 1,344-hour contexts that Chronos-2 was given. The input window is 168 hours, one week, and the horizon is 24 hours. The five levels are trained directly under the MQLoss loss, with one output for each level. The scaler is neuralforecast's standard scaler, the seed is fixed, and the run is on a CPU. Each cutoff's model sees only that cutoff's context, so no reading after the cutoff reaches it. The weights are not shipped.
 
-Before any NHITS score reads its recording, the same check runs on the NHITS files as on Chronos-2's, against the hashes in its manifest.
+NHITS gets the same check, against the hashes in its own manifest.
 
 [Example: recorded-nhits-check](../examples/recorded-nhits-check.py)
 
-The NHITS output has {{out:recorded-nhits-check:hash mismatches}} hash mismatches and {{out:recorded-nhits-check:interpolated levels}} interpolated levels, since every NHITS level is trained directly. {{out:recorded-nhits-check:rows with quantiles out of order}} of its rows have quantiles out of order, as the scores above showed.
+The NHITS files match their manifest, and none of its levels is interpolated, because each one is trained directly.
 
-The reason it is not run live is the runtime. The library brings torch, ray and pytorch-lightning. With them installed, the environment the examples need grows from 687 MB to 1.7 GB. The release service runs every example on 2 vCPU with 4 GiB of memory, and training on a CPU takes longer than an example should take. These two costs decide the matter. It is not a conflict between versions. The NHITS requirements file, `recordings/requirements-nhits.txt`, installs neuralforecast with the same pandas version the examples pin ({{version:pandas}}).
+Two costs keep NHITS out of the examples. Its library brings torch, ray and pytorch-lightning, which take the examples' environment from 687 MB to 1.7 GB, and a CPU training run takes longer than an example should on the release service's 2 vCPU and 4 GiB of memory. No version conflict is involved. The NHITS requirements file, `recordings/requirements-nhits.txt`, installs neuralforecast with the same pandas version the examples pin ({{version:pandas}}).
 
 Chronos-2 has its own stack. Its requirements file, `recordings/requirements.txt`, installs `chronos-forecasting` with transformers and torch, and it pins pandas 3 for the recording. The package does not need pandas 3. Its metadata accepts pandas from 2.0 up to, but not including, 4 ([chronos-forecasting source](https://files.pythonhosted.org/packages/79/0e/f205d4a1841e3740045c40e9e8caeff584937eb561831144ca7b93a29d49/chronos_forecasting-2.3.2.tar.gz), `pyproject.toml`). The examples never import either package. They read the saved outputs.
 
-A later edition can run NHITS live. That needs a runtime that fits the release service's limits, or a runtime of its own. Either way the windows, the scale and the scoring in this chapter stay the same, so a later model is scored beside the others on the same hours.
+NHITS can run live in a later edition, given a runtime that fits the release service's limits or one of its own. Either way the windows, the scale and the scoring in this chapter stay the same, so a later model is scored beside the others on the same hours.
 
 **Working rule:** Keep a model out of the examples' runtime when its dependencies would break the runtime budget, and record it instead, with its pins in a separate requirements file. Before you add a dependency, install it in a clean environment and measure what it adds in size and in packages. A resolve that moves a pinned package is a reason to record the model, not a reason to change the pin.
 
@@ -150,7 +148,7 @@ A recorded forecast goes stale in a different way. The recording covers three cu
 
 A later model revision changes every number that depends on the recording, even when the code does not change. Treat the revision as an update trigger. Record it, score it on the same windows as the old one, and compare the two before the replacement recording is used. A package that changes its interpolation between versions changes the 95% range without touching the median, so the manifest's list of interpolated levels should be compared as well.
 
-A recorded forecast can also break the order of its own quantiles. The NHITS recording does, in {{out:recorded-nhits-check:rows with quantiles out of order}} of its rows, by up to {{out:recorded-nhits-check:largest quantile crossing, kWh}} kWh. A range built from a crossed pair would be read as inverted. The check counts the crossings, and a consumer should sort or reject such rows before it uses them.
+A recorded forecast can also break the order of its own quantiles. The NHITS recording does, by a few kWh in a small number of rows. A range built from a crossed pair would be read as inverted. The check counts the crossings, and a consumer should sort or reject such rows before it uses them.
 
 Prophet's trend assumption fails when a client's demand moves to a different level, as it does after a change of contract or the loss of a large load. Prophet expects the trend to change as often as it did in the history, and its default interval does not cover the seasonal pattern. The sign is residuals that keep one sign across successive windows, and a coverage line that falls over them. The fix is a refit on a shorter history for that client, not a wider interval.
 
@@ -162,10 +160,8 @@ Prophet's trend assumption fails when a client's demand moves to a different lev
 - **Prophet's interval is 95%, set in code and printed.** Its coverage and interval score then sit beside the recordings' 95% ranges. The default of 80% is not used.
 - **Prophet's seasonality flags are fixed in code.** Daily and weekly seasonality are on and yearly is off. These are the choices Prophet makes for eight weeks of hourly data, set explicitly.
 - **The holiday table is off.** On the holiday decision windows the table raised the mean MASE, so the simpler model was kept. On the standard cutoffs the table would have lowered Prophet's mean MASE, and we report that figure without using it to choose.
-- **Chronos-2 and NHITS are recorded, not run.** The examples read the saved outputs, check their hashes, and never call a model. Examples must run offline and give the same output every time.
+- **Chronos-2 and NHITS are recorded, not run.** The examples read the saved outputs, check their hashes, and never call a model.
 - **NHITS is recorded for its runtime cost.** Its dependencies would take the examples' runtime from 687 MB to 1.7 GB, past the release service's 2 vCPU and 4 GiB, and a CPU training run takes longer than an example should.
 - **Chronos-2's 95% range is scored with its two interpolated quantiles, and the chapter says so.** NHITS's quantiles are trained directly, so none of its ranges is interpolated.
 - **The Chronos-2 lead is read as an upper bound.** Its pretraining corpus includes this dataset, so its score here is not out-of-sample.
 - **No model or setting is chosen on the standard cutoffs or the held-out week.** The decision windows are the only place a choice is made. The recordings have no forecasts there, so this chapter makes no choice with them.
-
-**Working rule:** Put every model on the same hours and the same scale, make each choice on decision windows, and let the standard cutoffs only report what each model does.
