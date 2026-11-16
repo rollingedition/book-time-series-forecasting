@@ -4,11 +4,11 @@ chapter_id: backtest-without-looking-ahead
 
 # Backtest without looking ahead
 
-By the end of this chapter you can score a day-ahead forecast over a year of cutoffs without letting the future into its history, handle the two clock-change hours in the data, and run a shift test that catches a feature which reads past its cutoff. You need what Chapter 2 gave you: the seasonal naive baseline, MAE, and a scale taken from history. The method stays the same. What changes is how many times you score it, and how carefully you cut the data each time.
+This chapter teaches you to score a day-ahead forecast over a year of cutoffs without letting the future into its history, to handle the two clock-change hours in the data, and to run a shift test that catches a feature which reads past its cutoff. You need what [Chapter 2](#take-the-mase-scale-from-history) gave you: the seasonal naive baseline, MAE, and a scale taken from history. The method stays the same. What changes is how many times you score it, and how carefully you cut the data each time.
 
 ## Why one test week misleads {#why-one-test-week-misleads}
 
-So far the evidence is the held-out week of Chapter 1: seven day-ahead forecasts for one client, 168 scored hours in all. A sample that size can be lucky. A forecast can match a calm week and miss the next, and one week cannot tell the two apart. The supplier, which commits each day's electricity purchase a day ahead, needs to know how a forecast does across many days, the unusual ones included, before it trusts a method with that purchase.
+So far the evidence is the held-out week of [Chapter 1](#score-on-a-held-out-week): seven day-ahead forecasts for one client, 168 scored hours in all. A sample that size can be lucky. A forecast can match a calm week and miss the next, and one week cannot tell the two apart. Before the supplier trusts a method with each day's purchase, it needs to know how a forecast does across many days, the unusual ones included.
 
 A backtest answers that question with the data you already have. It makes a forecast at many past moments, each with only the readings available at that moment, and scores each one against the readings that followed. Each such moment is a cutoff. Each cutoff, with the hours it forecasts, is a window. The scores of all the windows together say how the method behaves across the year, not on one week.
 
@@ -22,7 +22,7 @@ A window has three parts: the cutoff, the horizon and the history. The cutoff is
 
 In words, each window's targets are the 24 hours from its cutoff, and its history is the readings from 1,344 hours before the cutoff up to, but not including, the cutoff. The next window moves both by one step. A reading can therefore be a target in one window and history in a later one. That is correct, because by the later cutoff the reading lies in the past, and it is the same reading in both places.
 
-The Sunday sample runs seasonal naive over every Sunday of 2014, from Jan 5 to Dec 28, 2014. The EU puts every clock change on the last Sunday of March and of October ([Directive 2000/84/EC](https://eur-lex.europa.eu/eli/dir/2000/84/oj), Articles 2 and 3), and both changes of 2014, on Mar 30 and Oct 26, are in the sample. The sample uses the subset of eight clients, `SUBSET8`, which is every fourth client of the thirty, starting with the second. Here the year is scored on those eight clients, window by window:
+The Sunday sample runs seasonal naive over every Sunday of 2014, from Jan 5 to Dec 28, 2014. The EU puts every clock change on the last Sunday of March and of October ([Directive 2000/84/EC](https://eur-lex.europa.eu/eli/dir/2000/84/oj), Articles 2 and 3), and both changes of 2014, on Mar 30 and Oct 26, are in the sample. The sample uses [`SUBSET8`](#the-case-and-its-data), the book's eight-client subset. Here the year is scored on those eight clients, window by window:
 
 [Example: backtest-sundays-2014](../examples/backtest-sundays-2014.py)
 
@@ -32,7 +32,7 @@ The headline is the mean per-client MASE, not the pooled error. The MASE scale i
 
 The pooled MAE, {{out:backtest-sundays-2014:MAE}} kWh over the scored hours, compares methods on the same clients and windows, but it cannot compare clients with each other. Its largest client, {{out:backtest-sundays-2014:largest client by absolute error}}, carries {{out:backtest-sundays-2014:largest client's share of absolute error, percent}} percent of the absolute error, because that client uses thousands of kilowatt hours an hour, so its errors are in the thousands too. The RMSE is {{out:backtest-sundays-2014:RMSE}} kWh.
 
-Client MT_115 has no reading before Jan 14, 2014. Until then the meter reports zeros, and the data card says those zeros are not demand. The code leaves the {{out:backtest-sundays-2014:scored hours before a first reading}} hours before its first reading out of every score, which are the first two windows. Its history still holds those zeros, because the start rule for histories belongs to Chapter 4. Its MASE is left out for a different reason: its scale is read from the readings before Jan 5, 2014, and it has none. The output lists that client as left out of MASE, and the start rule is left to that chapter.
+Client `MT_115` has no reading before Jan 14, 2014. Until then the meter reports zeros, and the data card says those zeros are not demand. The code leaves the {{out:backtest-sundays-2014:scored hours before a first reading}} hours before its first reading out of every score, which are the first two windows. Its history still holds those zeros, because the start rule for histories belongs to Chapter 4. Its MASE is left out for a different reason: its scale is read from the readings before Jan 5, 2014, and it has none. The output lists that client as left out of MASE, and the start rule is left to that chapter.
 
 The statsforecast library has a function for this loop, `cross_validation`, and it is possible to call it without the window you wanted. At version {{version:statsforecast}}, the training slice of each window starts at the first reading of the series unless you pass `input_size`. The history then grows from one window to the next, and the eight-week rule is not in force. [Hyndman and Athanasopoulos](https://otexts.com/fpp3/toolbox.html#sec-accuracy) state the principle that the training set consists only of observations before the test set (*Forecasting: Principles and Practice*, 3rd ed., chapter 5). The code behind `cross_validation` decides the length of that set (statsforecast {{version:statsforecast}}, `statsforecast/core.py`). Its cutoff is the last hour a window trains on, where this chapter's cutoff is the first hour it forecasts, so the two names differ by one hour. This chapter builds each window's history itself, from the cutoff backwards. That gives the same 1,344 hours at every window and makes the rule visible in the code.
 
@@ -44,7 +44,7 @@ A backtest leaks when a window's model sees a reading from the hours it is asked
 
 One rule closes the history path. Each window's history is the readings whose timestamps fall in the eight weeks before its cutoff, and nothing at or after the cutoff. In the book's code, `history_before` keeps the rows with `ds` from the cutoff minus 1,344 hours up to, but not including, the cutoff. The reading at the cutoff itself belongs to the target day, so the same comparison excludes it. Membership is decided by timestamps, not by row positions, so a missing row cannot shift a window by an hour. `history_before` also raises an error unless every client has exactly 1,344 rows in the window.
 
-The window's own first hour is the cutoff, so a cut that is one hour too generous passes the first target reading into the history, and nothing in a forecast shows it. The row count can catch it:
+The window's own first hour is the cutoff, so a cut that is one hour too generous passes the first target reading into the history, and nothing in a forecast shows it. A row count can catch it, and the example below counts the rows.
 
 [Example: history-cut-check](../examples/history-cut-check.py)
 
@@ -62,7 +62,7 @@ The book reads the file under one stated assumption, which every later chapter r
 
 ### The March hour that reads zero {#the-march-hour-that-reads-zero}
 
-On Mar 30, 2014, the 01:00 label reads zero for {{out:clock-gap-daily-cutoffs:gap hours that read zero}} of the eight clients in the subset. The others read a small amount, not an hour of demand. The census covers all thirty clients:
+On Mar 30, 2014, the 01:00 label reads zero for {{out:clock-gap-daily-cutoffs:gap hours that read zero}} of the eight clients in the subset. The others read a small amount, not an hour of demand. The census covers all thirty clients.
 
 [Example: clock-change-census](../examples/clock-change-census.py)
 
@@ -112,7 +112,7 @@ Without the fill, the forecast for 01:00 on the day after each change is missing
 
 With the fill, the next-day error at that hour falls from {{out:clock-gap-daily-cutoffs:next-day MAE at 1am with no rule}} to {{out:clock-gap-daily-cutoffs:next-day MAE at 1am with the rule}} kWh in March, and from {{out:clock-repeat-daily-cutoffs:next-day MAE at 1am with no rule}} to {{out:clock-repeat-daily-cutoffs:next-day MAE at 1am with the rule}} kWh in October, while the error at other hours moves little.
 
-The year of Sunday cutoffs is a different test, because it applies the mask to the scores and the fill plays no part. The year is scored twice, plain and masked:
+The year of Sunday cutoffs is a different test, because it applies the mask to the scores and the fill plays no part. Scoring the year twice, plain and masked, shows how much the two hours moved the headline.
 
 [Example: clock-masked-backtest](../examples/clock-masked-backtest.py)
 
@@ -128,7 +128,7 @@ The Sunday sample cannot show the fill at all, because seasonal naive reads only
 
 Every window in a backtest should be built from data available at its cutoff, so the check for a leak is simple to state. A feature for a window must have the same value whether it is computed from the history cut at the cutoff or from the whole series. If the two values differ, the feature read a reading after the cutoff, and the backtest flatters the method. This is the shift test. It is cheap to run, and it catches a mistake that the backtest cannot catch on its own, because a leaking feature scores well by design.
 
-The test has two halves, and each catches what the other misses. Take the lead client, `MT_014`, and three features over its hourly readings. The first is a trailing mean: the average of the 24 hours up to and including each hour, which reads nothing after its hour. The second is the same mean shifted one hour forward, so each value is the average of a window that ends one hour later, and it reads the first hour after the cutoff. The third is a lag of one hour, the most common day-ahead leak. The history half compares each feature on the rows of the eight weeks before each of the three evaluation cutoffs, Dec 29, 30 and 31, 2014. The target half compares the 24 hours that each cutoff forecasts, computed from the readings before the cutoff only. Both versions start from the same first reading, so the warm-up of a rolling mean matches on both sides. Computed from different starts, the warm-up and floating-point rounding would show as false differences, which is why the check compares with a tolerance:
+The test has two halves, and each catches what the other misses. Take the lead client, `MT_014`, and three features over its hourly readings. The first is a trailing mean: the average of the 24 hours up to and including each hour, which reads nothing after its hour. The second is the same mean shifted one hour forward, so each value is the average of a window that ends one hour later, and it reads the first hour after the cutoff. The third is a lag of one hour, the most common day-ahead leak. The history half compares each feature on the rows of the eight weeks before each of the three evaluation cutoffs, Dec 29 to Dec 31, 2014. The target half compares the 24 hours that each cutoff forecasts, computed from the readings before the cutoff only. Both versions start from the same first reading, so the warm-up of a rolling mean matches on both sides. Computed from different starts, the warm-up and floating-point rounding would show as false differences, which is why the check compares with a tolerance:
 
 [Example: leakage-shift-check](../examples/leakage-shift-check.py)
 
@@ -165,7 +165,7 @@ Finally, a backtest that passes the shift test can still leak through the scale 
 - The timestamp `ds` is the start of its hour in local clock time, with no time zone, and the book reads the file under that assumption.
 - Both clock-change hours are masked in every history and every score. A model that cannot take missing values reads the mean of the neighbouring hours from history before the cutoff.
 - Halving the October hour is rejected, because it assumes the two real hours used the same energy, which the data does not show.
-- The headline is the mean per-client MASE, on the one scale of Chapter 2 through `scoring.book_scale`. Pooled MAE is the second line, with the largest client's share printed.
+- The headline is the mean per-client MASE, on the one scale of [Chapter 2](#take-the-mase-scale-from-history) through `scoring.book_scale`. Pooled MAE is the second line, with the largest client's share printed.
+- Every figure the prose quotes stays bound to a labelled line of its example's output, as [Chapter 1](#decisions-ch1) set out, so a library update changes the chapter's figure and nobody retypes it.
 - A client with no reading before the first cutoff is left out of MASE. A late starter's hours before its first reading are left out of every score. Chapter 4 owns the start rule for histories.
 - The shift test runs on every feature, both halves. Every lag is at least the horizon, and a feature that differs at any cutoff is not used.
-- The examples print labelled lines, and the prose binds to them. When a library update changes a number, the build changes the chapter's figure, and nobody retypes it.

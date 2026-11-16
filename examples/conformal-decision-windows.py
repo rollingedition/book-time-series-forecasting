@@ -31,7 +31,7 @@ for name, s, fin in variants:
     lo, hi = bounds(sc, cal, 80, scale=s, finite=fin)
     # Coverage per client, then the lowest of the thirty clients.
     show(f"{name}, lowest client coverage at 80", ((sc["y"] >= lo) & (sc["y"] <= hi)).groupby(sc["unique_id"]).mean().min(), 3)
-# The total is what the purchase is made on, so its bands take no scale.
+# One series, so no scale: the scale exists only to pool clients of different size.
 tcal, tsc = total_of(cal), total_of(sc)
 for name, fin in (("total", False), ("total, finite", True)):
     lo, hi = bounds(tsc, tcal, 80, finite=fin)

@@ -139,7 +139,7 @@ Last, the window itself can flatter the method. A week with no unusual days can 
 
 ## Decisions this chapter made {#decisions-ch1}
 
-This chapter made 9 choices. Most are settings in `examples/lib/settings.py`, so a later edition that changes one changes it in every chapter that uses it. The rest are stated in the data card or in this chapter. Chapter 2 starts from these two forecasts and their two scores, and asks whether either is good enough to act on.
+This chapter made nine choices. Most are settings in `examples/lib/settings.py`, so a later edition that changes one changes it in every chapter that uses it. The rest are stated in the data card or in this chapter. Chapter 2 starts from these two forecasts and their two scores, and asks whether either is good enough to act on.
 
 - Each window's cutoff is at 00:00 on the day it predicts, and the horizon is 24 hours, so each window covers that day.
 - The history before each cutoff is {{out:load-lead-client:history rows per window}} hours, which is 8 weeks.
