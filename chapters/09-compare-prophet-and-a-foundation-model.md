@@ -100,9 +100,9 @@ Two examples score the recordings, one for each model, on the same thirty client
 | NHITS, median | {{out:recorded-nhits-score:mean MASE NHITS}} | {{out:recorded-nhits-score:mean MASE NHITS SUBSET8}} | {{out:recorded-nhits-score:MAE NHITS}} |
 | Prophet, point forecast | {{out:prophet-thirty-clients-backtest:mean MASE Prophet}} | {{out:prophet-thirty-clients-backtest:mean MASE Prophet SUBSET8}} | {{out:prophet-thirty-clients-backtest:MAE Prophet}} |
 
-Chronos-2 has the lowest mean per-client MASE of the five models on both sets of clients: {{out:recorded-chronos2-score:mean MASE Chronos}} over the thirty clients and {{out:recorded-chronos2-score:mean MASE Chronos SUBSET8}} on SUBSET8. It beats seasonal naive on {{out:recorded-chronos2-score:clients where Chronos beats seasonal naive}} of the thirty clients. The global model from [Chapter 6](#score-thirty-clients-on-the-same-cutoffs) is second on both sets. [Chapter 4's fixed seasonal ARIMA](#fit-a-fixed-seasonal-arima), on the same eight clients, cutoffs and scale, scores {{out:arima-subset-backtest:MASE ARIMA}} on SUBSET8, between the global model and seasonal naive.
+Chronos-2 has the lowest mean per-client MASE of the five models on both sets of clients: {{out:recorded-chronos2-score:mean MASE Chronos}} over the thirty clients and {{out:recorded-chronos2-score:mean MASE Chronos SUBSET8}} on `SUBSET8`. It beats seasonal naive on {{out:recorded-chronos2-score:clients where Chronos beats seasonal naive}} of the thirty clients. The global model from [Chapter 6](#score-thirty-clients-on-the-same-cutoffs) is second on both sets. [Chapter 4's fixed seasonal ARIMA](#fit-a-fixed-seasonal-arima), on the same eight clients, cutoffs and scale, scores {{out:arima-subset-backtest:MASE ARIMA}} on `SUBSET8`, between the global model and seasonal naive.
 
-NHITS is third on the thirty clients and fourth on SUBSET8, where it is narrowly behind seasonal naive, {{out:recorded-nhits-score:mean MASE NHITS SUBSET8}} against {{out:recorded-chronos2-score:mean MASE SeasonalNaive SUBSET8}}. Prophet has the highest mean on both sets.
+NHITS is third on the thirty clients and fourth on `SUBSET8`, where it is narrowly behind seasonal naive, {{out:recorded-nhits-score:mean MASE NHITS SUBSET8}} against {{out:recorded-chronos2-score:mean MASE SeasonalNaive SUBSET8}}. Prophet has the highest mean on both sets.
 
 The lead needs its caveat. Chronos-2's pretraining corpus includes this dataset ([the recording section](#load-a-recorded-foundation-model)), so these readings may have been part of its training, and its score here is an upper bound on what to expect on readings it has not seen. NHITS has no such advantage, because each of its cutoffs was trained only on that cutoff's own context. NHITS trails Chronos-2 on the same hours, but the two are not on equal footing, and this chapter does not rank them on this comparison.
 
@@ -158,7 +158,7 @@ Prophet's trend assumption fails when a client's demand moves to a different lev
 
 ## Decisions this chapter made {#decisions-ch9}
 
-- **Prophet runs on all thirty clients, not only on SUBSET8.** Running all thirty puts Prophet beside the global model on the same clients. The SUBSET8 means are printed from the same run.
+- **Prophet runs on all thirty clients, not only on `SUBSET8`.** Running all thirty puts Prophet beside the global model on the same clients. The `SUBSET8` means are printed from the same run.
 - **Prophet's interval is 95%, set in code and printed.** Its coverage and interval score then sit beside the recordings' 95% ranges. The default of 80% is not used.
 - **Prophet's seasonality flags are fixed in code.** Daily and weekly seasonality are on and yearly is off. These are the choices Prophet makes for eight weeks of hourly data, set explicitly.
 - **The holiday table is off.** On the holiday decision windows the table raised the mean MASE, so the simpler model was kept. On the standard cutoffs the table would have lowered Prophet's mean MASE, and we report that figure without using it to choose.
