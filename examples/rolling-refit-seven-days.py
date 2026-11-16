@@ -1,8 +1,4 @@
-"""Run the held-out week, Dec 25 to Dec 31, 2014: one forecast a day from its own midnight cutoff, with the weekly refit
-cycle and the late-data fill. Each forecast is logged when it is made, and its readings are scored as they arrive. The
-lead client's last six readings of Dec 28 arrive after the Dec 29 cutoff, so that forecast is made with them filled. A
-second run refits on the next day's readings, a deliberate leak, and the check on each refit's inputs fails for it. The
-80% bands are calibrated on Dec 9 to Dec 20, 2014, which is earlier than every scored day."""
+"""Runs the held-out week, Dec 25 to Dec 31, 2014: one forecast a day from its own midnight cutoff, with the weekly refit cycle and the late-data fill, each logged when it is made. The `log rows` lines show both arrival checks pass, the leaky run fails the first, and the `coverage 80` and `MAE` lines are the figures the prose quotes; the 80% bands use calibration days Dec 9 to Dec 20, 2014, earlier than every scored day."""
 import pandas as pd
 
 from lib.electricity import load

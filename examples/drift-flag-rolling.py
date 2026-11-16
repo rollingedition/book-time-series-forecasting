@@ -1,6 +1,4 @@
-"""Flag drift against the backtest. The reference is the median daily MASE of the calibration days, Dec 9 to Dec 20, 2014,
-which are earlier than the held-out week. A day is flagged when its MASE is above FLAG_FACTOR times that median. The
-decision days, which are ordinary days, show how the flag behaves before the held-out week."""
+"""Flags drift against the backtest: a day is flagged when its daily MASE is above FLAG_FACTOR times the reference, the median daily MASE of the calibration days, Dec 9 to Dec 20, 2014, which are earlier than the held-out week. The `largest decision day` line shows ordinary days staying under the line, and the `MASE` and `held-out days flagged` lines show which held-out days cross it."""
 from lib.electricity import load
 from lib.panel import ALL30
 from lib.running import (CAL_DAYS, DECISION_DAYS, FLAG_FACTOR, HELD_OUT_DAYS, daily_mase, flagged, prepare, run_days,

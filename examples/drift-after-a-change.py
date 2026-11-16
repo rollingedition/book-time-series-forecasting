@@ -1,7 +1,4 @@
-"""How a change shows up in the flags. This is a stated test, not a fact about the data: from Dec 27, 2014 every reading of
-all thirty clients is multiplied by 0.6, as if demand had dropped by 40%. The held-out week runs on the changed readings,
-with the same cadence, reference, rule and bands as the examples before it. The calibration days are earlier than the
-change, so the bands are fixed before it happens."""
+"""Shows how a change appears in the flags: a stated test, not a fact about the data, in which every reading from Dec 27, 2014 is multiplied by 0.6, as if demand had dropped by 40%. The `held-out days flagged` and `coverage 80` lines show what the flags and bands do, with the same cadence, reference, rule and bands as before."""
 import pandas as pd
 
 from lib.electricity import load

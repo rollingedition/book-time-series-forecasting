@@ -147,5 +147,4 @@ On the scored days the summed bound did better, with hours short at {{out:buy-ah
 - **The statistical library's interval class.** statsforecast's class is `ConformalIntervals`. Its name differs from mlforecast's `PredictionIntervals`, and this chapter uses each name for its own library.
 - **A third example.** The purchase decision needed its own measurement, so `buy-ahead-level-by-cost` was added, along with `conformal-decision-windows`, which makes the design choices on windows the held-out evaluation does not use.
 - **Holiday coverage is not claimed.** Dec 25, 2014 is in the held-out week, but it is outside both the calibration and the scored windows. The book reports nothing about how the bands cover the holiday itself.
-
-The lesson is that a purchase level is only as good as the band under it, and a band only as good as the windows that set it.
+- **What to carry away.** A purchase level is only as good as the band under it, and a band only as good as the windows that set it.
