@@ -4,7 +4,7 @@ chapter_id: beat-the-naive-baselines
 
 # Set the baselines a model must beat
 
-By the end of this chapter you can compute three baselines for a client's day-ahead forecast, naive, seasonal naive and average of weeks, and scale a client's error with MASE, using a scale that reads only the readings before the forecast week.
+In this chapter you compute three baselines for a client's day-ahead forecast, naive, seasonal naive and average of weeks, and scale a client's error with MASE, using a scale that reads only the readings before the forecast week.
 
 [Chapter 1](#score-on-a-held-out-week) ended with two scores on the held-out week, and neither can be judged yet, because an error in kWh means nothing on its own. The supplier, whose purchase rests on each hour's forecast, has to set each model's error against what the simplest forecast scores on the same hours, and against how much the client's demand moves from one day to the next. This chapter builds both comparisons. The supplier needs them before it can say that a model is worth its cost.
 
