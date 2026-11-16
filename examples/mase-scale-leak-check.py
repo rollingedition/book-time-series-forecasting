@@ -12,7 +12,7 @@ first_day = pd.Timestamp(HELD_OUT_WEEK[0])                   # the first test da
 
 full = load([LEAD])                                          # every reading of the lead client, with the quirk column that marks clock-change hours
 df = full[["unique_id", "ds", "y"]]                          # the three columns the baselines and mase_scores read; quirk is for masking only
-forecasts = baseline_forecasts(df, held_out_cutoffs())       # the same windows and history rule as the naive example
+forecasts = baseline_forecasts(df, held_out_cutoffs())       # the same windows and history rule as naive-baselines-held-out-week.py
 history = scale_history(full, first_day)                     # keeps only rows strictly before the first test day, so no test hour reaches this scale
 masked_history = mask_clock_changes(history)                 # clock-change hours set to NaN, so the pairs that touch them drop out of the mean
 masked_whole = mask_clock_changes(full)                      # the same masking on the whole series, so the test week is the only difference

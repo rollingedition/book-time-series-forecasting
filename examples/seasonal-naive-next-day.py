@@ -38,7 +38,7 @@ for day, mae_day in window_mae(df, forecasts, "SeasonalNaive").items():
 cutoff = held_out_cutoffs()[0]
 gap = df[df["ds"] != cutoff - pd.Timedelta(hours=1)]  # drops the hour just before the first cutoff
 try:
-    forecast_windows(sf, gap, [cutoff])  # raises ValueError because the history is one hour short
+    forecast_windows(sf, gap, [cutoff])  # history_before raises ValueError unless every client has exactly HISTORY_HOURS rows before the cutoff.
     refused = "no"
 except ValueError:
     refused = "yes"
