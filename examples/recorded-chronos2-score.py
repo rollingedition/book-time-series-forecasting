@@ -1,6 +1,7 @@
-"""Scores the recorded Chronos-2 forecasts on the three standard cutoffs and the MASE scale of the other models: the median
-is the point forecast, the 0.1 and 0.9 quantiles the 80% range, and the 0.025 and 0.975 quantiles the 95% range. The
-point about the lead rests on the mean MASE lines, and the code reads the recording only, never the model."""
+"""Scores the recorded Chronos-2 forecasts on the three standard cutoffs and the MASE scale of the other models: the
+median is the point forecast, the 0.1 and 0.9 quantiles the 80% range, and the 0.025 and 0.975 quantiles the 95%
+range. The point about the lead rests on the mean MASE lines, and the code reads the recording only, never the
+model."""
 import pandas as pd
 
 from lib.compare import (global_forecasts, recorded_forecasts, report_pinball, report_range, report_subset, score,
@@ -13,7 +14,7 @@ from lib.settings import EVAL_CUTOFFS, show
 
 raw = load(ALL30)
 # clock-change hours set to missing, as chapter 3 sets them
-df = mask_clock_changes(raw)[["unique_id", "ds", "y"]]            
+df = mask_clock_changes(raw)[["unique_id", "ds", "y"]]
 cutoffs = pd.DatetimeIndex(EVAL_CUTOFFS)
 # the recording, read only after each output matches its manifest hash; its median is the Chronos column
 forecasts = recorded_forecasts().merge(
@@ -21,7 +22,7 @@ forecasts = recorded_forecasts().merge(
     global_forecasts(df, cutoffs), on=["unique_id", "ds"], validate="one_to_one")
 models = ["Chronos", "SeasonalNaive", "Global"]
 # per_client: one MASE per client and model; scored: forecasts beside readings
-per_client, scored = score(raw, forecasts, models, ALL30) 
+per_client, scored = score(raw, forecasts, models, ALL30)
 
 show("clients scored", scored["unique_id"].nunique())
 show("scored hours", len(scored))

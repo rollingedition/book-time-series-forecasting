@@ -6,7 +6,7 @@ chapter_id: compare-prophet-and-a-foundation-model
 
 Once you finish this chapter, you can fit Prophet on the book's three standard cutoffs, load a recorded foundation model (Chronos-2) and a recorded neural model (NHITS), and score all of them on one MASE scale against the same readings.
 
-Readers meet Prophet and neural forecasting models outside this book, each with its own claims. The question for an electricity supplier that buys power a day ahead for its clients (the supplier from here on) is which of them earns a place in its forecast. The supplier needs something narrower from any model: a day-ahead forecast for each client, and a range it can buy against. Chapter 8 calibrated such ranges on earlier windows, and the ranges here are not calibrated that way, so this chapter checks their coverage and does not fix it. It scores every model on the standard cutoffs, Dec 29 to 31, 2014, against seasonal naive from [Chapter 2](#three-baselines-to-beat) and the global model from [Chapter 6](#one-model-for-many-clients), on the same hours and one MASE scale. Two of the models are recorded rather than run.
+Readers meet Prophet and neural forecasting models outside this book, each with its own claims. The question for an electricity supplier that must commit tomorrow's purchases today (the supplier from here on) is which of these models earns a place in its forecast. The supplier needs something narrower from any model: a day-ahead forecast for each client, and a range it can buy against. Chapter 8 calibrated such ranges on earlier windows, and the ranges here are not calibrated that way, so this chapter checks their coverage and does not fix it. It scores every model on the standard cutoffs, Dec 29 to 31, 2014, against seasonal naive from [Chapter 2](#three-baselines-to-beat) and the global model from [Chapter 6](#one-model-for-many-clients), on the same hours and one MASE scale. Two of the models are recorded rather than run.
 
 ## Where Prophet fits {#where-prophet-fits}
 
@@ -30,7 +30,7 @@ We chose the holiday table on decision windows, not on the standard cutoffs. The
 
 [Example: prophet-holiday-decision](../examples/prophet-holiday-decision.py)
 
-On the holiday windows the table makes Prophet worse. Its mean per-client MASE is {{out:prophet-holiday-decision:mean MASE WithHolidays}} with the table and {{out:prophet-holiday-decision:mean MASE NoHolidays}} without it, against {{out:prophet-holiday-decision:mean MASE SeasonalNaive}} for seasonal naive, so the table stays off.
+On the holiday windows the table makes Prophet worse. Its mean per-client MASE is {{out:prophet-holiday-decision:mean MASE WithHolidays}} with the table and {{out:prophet-holiday-decision:mean MASE NoHolidays}} without it, against {{out:prophet-holiday-decision:mean MASE SeasonalNaive}} for seasonal naive, so the table stays off. A setting is kept only if it lowers the decision-window MASE, and a tie keeps the simpler model.
 
 The table can change a forecast only on holiday hours. It changes {{out:prophet-holiday-decision:hours where the forecasts differ}} of the {{out:prophet-holiday-decision:holiday hours in the decision windows}} holiday hours in these windows, and no hour of the four ordinary windows.
 

@@ -1,5 +1,5 @@
 """mlforecast's own conformal intervals, with three calibration windows, refitted at each of the three standard cutoffs.
-The point rests on the coverage at 80 and 95 falling short of their labels, and on the highest coverage three windows allow."""
+Compare the coverage at 80 and 95 with their labels, and with the highest coverage three windows allow."""
 import pandas as pd
 
 from lib.electricity import load
@@ -9,7 +9,7 @@ from lib.quirks import mask_clock_changes
 from lib.settings import EVAL_CUTOFFS, show
 
 raw = load(ALL30)
-# The Oct 26, 2014 clock change is masked as NaN; the windows here start after it, so no masked hour is scored.
+# Every clock-change hour (four changes, 2013 and 2014) is masked as NaN. builtin_intervals keeps only rows from Oct 27, 2014 on, so no masked hour is in a window.
 df = mask_clock_changes(raw)[["unique_id", "ds", "y"]]
 # One row per client and hour. The bounds are columns named by model and level, such as LGBMRegressor-lo-80.
 cv = builtin_intervals(df, pd.to_datetime(EVAL_CUTOFFS))
@@ -17,7 +17,7 @@ cv = builtin_intervals(df, pd.to_datetime(EVAL_CUTOFFS))
 show("scored hours", len(cv))
 show("calibration windows per cutoff", 3)
 show("residuals per client and hour", 3)
-# The band is plus and minus the largest of three absolute residuals, so it covers 3 of the 4 places a new one can take.
+# Ceiling of a band of plus and minus n absolute residuals, n / (n + 1), with n = 3: at most 3 of the 4 places a new one can take.
 show("highest coverage three windows allow, any level", symmetric_ceiling(3), 3)
 for level in (80, 95):
     # Simulated under exchangeable normal errors, with mlforecast's construction, to set against the measured coverage.

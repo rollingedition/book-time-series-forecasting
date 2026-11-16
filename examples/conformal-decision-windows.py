@@ -1,6 +1,6 @@
 """The two calibration choices, scaling each client's residuals and the finite-sample levels, decided on the four decision
-windows (Nov 25 to Dec 3, 2014), with calibration on Nov 9 to 20. The point rests on the lowest client's coverage and the
-interval scores, which are printed for each variant. The standard cutoffs are not read."""
+windows (Nov 25 to Dec 3, 2014), with calibration on Nov 9 to 20. Compare the lowest client's coverage and the interval scores printed for each variant;
+the standard cutoffs are not read."""
 from lib.baselines import seasonal_scale
 from lib.electricity import load
 from lib.intervals import DECISION_CAL, bounds, calibration_facts, coverage, interval_score, paired, total_of
@@ -10,7 +10,7 @@ from lib.scoring import book_scale
 from lib.settings import show
 
 raw = load(ALL30)
-# The Oct 26, 2014 clock change is masked as NaN, as in every example of this chapter.
+# Every clock-change hour (four changes, 2013 and 2014) is masked as NaN, as in every example of this chapter.
 df = mask_clock_changes(raw)[["unique_id", "ds", "y"]]
 # One row per client and hour, with the forecast f, the reading y and the residual e.
 cal, sc = paired(df, DECISION_CAL), paired(df, DECISION_CUTOFFS)

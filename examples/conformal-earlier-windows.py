@@ -1,5 +1,5 @@
 """Conformal bands for every client, calibrated on twelve holiday-free days before the scored week, with each client's
-residuals scaled first. The point rests on the coverage and interval score at 80 and 95; the unscaled, three-day and
+residuals scaled first. Read the coverage and interval score at 80 and 95 first; the unscaled, three-day and
 finite-sample lines are printed for comparison."""
 import pandas as pd
 
