@@ -8,7 +8,7 @@ abstract: 'How to forecast demand a day ahead and check that the forecast holds 
 url: https://rollingedition.com/time-series-forecasting
 repository-code: https://github.com/rollingedition/book-time-series-forecasting
 license:
-- CC-BY-4.0
+- CC-BY-NC-4.0
 - MIT
 preferred-citation:
   type: book
