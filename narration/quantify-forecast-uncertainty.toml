@@ -17,6 +17,9 @@ say = "The code calibrates on twelve ordinary days, Dec 9 to 20, 2014, and score
 [examples.buy-ahead-level-by-cost]
 say = "The code sets the bands for the total, the hourly sum of the thirty clients, from the same twelve calibration days, at 80 percent only, because twelve residuals cannot support a 95 percent band. It prints the two illustrative costs, one for a kilowatt hour bought short and one for a kilowatt hour bought and not used, and the critical fractile they give, which is {{out:buy-ahead-level-by-cost:critical fractile}}. It prints the scored hours, the coverage of the total's 80 percent bands on each day, which is {{out:buy-ahead-level-by-cost:total coverage at 80}} over all three days, and the mean absolute error by day, beside it. It then prints the realised mean cost and the share of hours in which the reading was above the purchase at 0.50, the critical fractile and 0.90. At the critical fractile the mean cost is {{out:buy-ahead-level-by-cost:mean cost at 0.75}}. The last lines print the quantile loss, scaled by the two costs, beside the mean cost at the critical fractile, which is the same figure, and compare the total's bound with the sum of the clients' bounds."
 
+[examples.total-band-miss-runs]
+say = "The code builds the total's 80 percent bands from the twelve calibration days, as the purchase example does, and marks each scored hour, in time order, as inside or outside the band. Of {{out:total-band-miss-runs:scored hours}} hours, {{out:total-band-miss-runs:hours missed at 80}} are outside. It prints the longest run of missed hours in a row, which is {{out:total-band-miss-runs:longest run of missed hours}}, and the share of misses whose next hour also misses, which is {{out:total-band-miss-runs:misses followed by a miss}}. It then shuffles the same hours ten thousand times with a fixed seed and prints both measures again: the longest run averages {{out:total-band-miss-runs:longest run of missed hours, shuffled, mean}}, and the share of shuffles with a run as long as the real one is {{out:total-band-miss-runs:share of shuffles with a run this long}}."
+
 [[tables]]
 section = "measure-coverage-on-held-out-days"
 starts = "| Scored day | Error of the total, kWh"
@@ -26,3 +29,10 @@ say = "The table has a row for each of the three scored days. Each row gives the
 section = "choose-the-level-from-the-cost-of-error"
 starts = "| Level | Mean cost | Hours short |"
 say = "The table has a row for each of the three levels: 0.50, the critical fractile at {{out:buy-ahead-level-by-cost:critical fractile}}, and 0.90. Each row gives the mean cost of buying at that level on the scored days, and the share of hours in which the purchase fell short."
+
+[terms]
+"arXiv:2611.24329v1" = "archive preprint twenty-six eleven, two four three two nine, version one"
+"ERA5" = "E R A five"
+"CNN" = "C N N"
+"ECMWF" = "E C M W F"
+"HRES" = "H res"
