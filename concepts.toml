@@ -1,0 +1,983 @@
+# The terms this book defines, each quoted from the sentence that defines it (writing standards W-77 to W-80).
+
+context = "data-science"
+
+[[concepts]]
+id = "forecast"
+term = "forecast"
+context = "time-series-forecasting"
+definition = "A forecast here is the expected demand of one client in each hour, made from readings recorded before the forecast was made."
+section = "the-case-and-its-data"
+
+[concepts.relations]
+part-of = ["window"]
+
+[[concepts]]
+id = "cutoff"
+term = "cutoff"
+context = "time-series-forecasting"
+definition = "The moment a forecast is made is its cutoff."
+section = "the-case-and-its-data"
+example = "seasonal-naive-next-day"
+
+[concepts.relations]
+part-of = ["window"]
+prerequisite-of = ["history"]
+
+[[concepts]]
+id = "horizon"
+term = "horizon"
+context = "time-series-forecasting"
+definition = "A forecast uses only the readings before its cutoff, and it reaches forward a fixed number of hours, its horizon."
+section = "the-case-and-its-data"
+example = "seasonal-naive-next-day"
+
+[concepts.relations]
+part-of = ["window"]
+
+[[concepts]]
+id = "window"
+term = "window"
+context = "time-series-forecasting"
+definition = "A window is one cutoff with its horizon and the forecast it produces."
+section = "the-case-and-its-data"
+example = "seasonal-naive-next-day"
+
+[concepts.relations]
+part-of = ["backtest"]
+
+[[concepts]]
+id = "time-series"
+term = "time series"
+context = "time-series-forecasting"
+definition = "A time series is a sequence of readings in time order."
+section = "load-one-clients-demand"
+example = "load-lead-client"
+
+[[concepts]]
+id = "gap-hour"
+term = "gap hour"
+aliases = ["clock_change_gap"]
+context = "time-series-forecasting"
+definition = "`clock_change_gap` is 01:00 on a March clock-change day."
+section = "load-one-clients-demand"
+example = "clock-change-census"
+
+[[concepts]]
+id = "repeat-hour"
+term = "repeat hour"
+aliases = ["clock_change_repeat"]
+context = "time-series-forecasting"
+definition = "`clock_change_repeat` is 01:00 on an October clock-change day."
+section = "load-one-clients-demand"
+example = "clock-change-census"
+
+[concepts.relations]
+contrasts-with = ["gap-hour"]
+
+[[concepts]]
+id = "seasonal-naive"
+term = "seasonal naive"
+aliases = ["SeasonalNaive"]
+context = "time-series-forecasting"
+definition = "Seasonal naive says that each future value equals the last observed value from the same season."
+formula = "y(t - 24)"
+section = "forecast-with-seasonal-naive"
+example = "seasonal-naive-next-day"
+
+[concepts.relations]
+broader = ["baseline"]
+implemented-by = [{ to = "statsforecast", versions = ">=2.1" }]
+
+[[concepts]]
+id = "autoets"
+term = "AutoETS"
+context = "time-series-forecasting"
+definition = "statsforecast {{version:statsforecast}} describes AutoETS as selecting the best ETS (error, trend and seasonality) form with an information criterion (statsforecast/models.py, class AutoETS)."
+section = "forecast-with-a-statistical-model"
+example = "autoets-next-day"
+applies_to = ["statsforecast"]
+
+[concepts.relations]
+implemented-by = [{ to = "statsforecast", versions = ">=2.1" }]
+
+[[concepts]]
+id = "aicc"
+term = "AICc"
+aliases = ["Akaike information criterion corrected for small samples"]
+definition = "The criterion AutoETS uses is AICc, the Akaike information criterion corrected for small samples."
+section = "forecast-with-a-statistical-model"
+example = "autoets-next-day"
+
+[concepts.relations]
+prerequisite-of = ["autoets"]
+
+[[concepts]]
+id = "model-string"
+term = "model string"
+context = "time-series-forecasting"
+definition = "The model string sets which forms the model may take, with one letter each for error, trend and season."
+section = "forecast-with-a-statistical-model"
+example = "autoets-next-day"
+applies_to = ["statsforecast"]
+
+[concepts.relations]
+part-of = ["autoets"]
+
+[[concepts]]
+id = "score"
+term = "score"
+context = "model-evaluation"
+definition = "A score turns the errors of a set of forecasts into one number."
+section = "score-on-a-held-out-week"
+example = "seasonal-naive-next-day"
+
+[[concepts]]
+id = "error"
+term = "error"
+context = "model-evaluation"
+definition = "The error of an hour is the actual demand minus the forecast."
+section = "score-on-a-held-out-week"
+example = "seasonal-naive-next-day"
+
+[concepts.relations]
+prerequisite-of = ["score"]
+
+[[concepts]]
+id = "mae"
+term = "mean absolute error"
+aliases = ["MAE"]
+context = "model-evaluation"
+definition = "The mean absolute error, MAE, is the average size of the miss"
+formula = "MAE = mean(abs(actual - forecast))"
+section = "score-on-a-held-out-week"
+example = "seasonal-naive-next-day"
+
+[concepts.relations]
+broader = ["score"]
+computed-from = ["error"]
+implemented-by = [{ to = "utilsforecast", versions = ">=0.2" }]
+
+[[concepts]]
+id = "rmse"
+term = "root mean squared error"
+aliases = ["RMSE"]
+context = "model-evaluation"
+definition = "The root mean squared error, RMSE, is RMSE = sqrt(mean((actual - forecast)^2))."
+formula = "RMSE = sqrt(mean((actual - forecast)^2))"
+section = "score-on-a-held-out-week"
+example = "seasonal-naive-next-day"
+
+[concepts.relations]
+broader = ["score"]
+computed-from = ["error"]
+contrasts-with = ["mae"]
+implemented-by = [{ to = "utilsforecast", versions = ">=0.2" }]
+
+[[concepts]]
+id = "baseline"
+term = "baseline"
+context = "time-series-forecasting"
+definition = "A baseline is a forecast that needs no fitting."
+section = "why-a-baseline-comes-first"
+example = "naive-baselines-held-out-week"
+
+[[concepts]]
+id = "history"
+term = "history"
+context = "time-series-forecasting"
+definition = "the history is every reading before the cutoff"
+section = "why-a-baseline-comes-first"
+example = "naive-baselines-held-out-week"
+
+[[concepts]]
+id = "backtest"
+term = "backtest"
+context = "model-evaluation"
+definition = "a backtest is the score of many windows, each made as it would have been made on its day"
+section = "why-a-baseline-comes-first"
+
+[[concepts]]
+id = "naive"
+term = "naive"
+context = "time-series-forecasting"
+definition = "Naive repeats the last reading before the cutoff"
+formula = "forecast(T + k) = y(T - 1)"
+section = "three-baselines-to-beat"
+example = "naive-baselines-held-out-week"
+
+[concepts.relations]
+broader = ["baseline"]
+implemented-by = [{ to = "statsforecast", versions = ">=2.1" }]
+
+[[concepts]]
+id = "average-of-weeks"
+term = "average of weeks"
+context = "time-series-forecasting"
+definition = "Average of weeks takes the mean of the same hour on the same weekday over the four weeks before"
+formula = "forecast(T + k) = (y(T + k - 168) + y(T + k - 336) + y(T + k - 504) + y(T + k - 672)) / 4"
+section = "three-baselines-to-beat"
+example = "naive-baselines-held-out-week"
+
+[concepts.relations]
+broader = ["baseline"]
+
+[[concepts]]
+id = "scaled-error"
+term = "scaled error"
+context = "model-evaluation"
+definition = "A scaled error divides each absolute error by a scale, the typical error of a simple method on the same client's own history."
+section = "scale-errors-with-mase"
+example = "mase-scale-leak-check"
+
+[concepts.relations]
+computed-from = ["error"]
+prerequisite-of = ["mase"]
+
+[[concepts]]
+id = "mase"
+term = "mean absolute scaled error"
+aliases = ["MASE"]
+context = "model-evaluation"
+definition = "MASE, the mean absolute scaled error, is the mean of the scaled errors."
+formula = "MASE = mean of |actual(t) - forecast(t)| / scale"
+section = "scale-errors-with-mase"
+example = "mase-scale-leak-check"
+
+[concepts.relations]
+computed-from = ["scaled-error"]
+implemented-by = [{ to = "utilsforecast", versions = ">=0.2" }]
+
+[[concepts]]
+id = "one-step-naive-error"
+term = "one-step naive error"
+aliases = ["one-step scale"]
+context = "model-evaluation"
+definition = "The 2006 paper scales by the one-step naive error: the mean absolute difference between each reading and the one before it."
+section = "scale-errors-with-mase"
+
+[[concepts]]
+id = "seasonal-scale"
+term = "seasonal scale"
+context = "model-evaluation"
+definition = "under the seasonal scale, the denominator is seasonal naive's error on the client's own history"
+formula = "scale = mean of |y(t) - y(t - 24)|"
+section = "scale-errors-with-mase"
+example = "mase-scale-leak-check"
+
+[concepts.relations]
+computed-from = ["seasonal-naive"]
+measured-from = ["history"]
+contrasts-with = ["one-step-naive-error"]
+part-of = ["mase"]
+
+[[concepts]]
+id = "masked-reading"
+term = "masked reading"
+definition = "A masked reading is neither zero nor a copy; it is missing."
+section = "take-the-mase-scale-from-history"
+example = "mase-scale-leak-check"
+
+[[concepts]]
+id = "leakage"
+term = "leakage"
+aliases = ["leak"]
+context = "model-evaluation"
+definition = "A backtest leaks when a window's model sees a reading from the hours it is asked to forecast."
+section = "keep-the-future-out-of-history"
+example = "history-cut-check"
+
+[[concepts]]
+id = "fill"
+term = "fill"
+context = "time-series-forecasting"
+definition = "The fill is the mean of the hour before and the hour after, taken from the history before the cutoff only."
+section = "mark-clock-change-hours-as-missing"
+example = "clock-gap-daily-cutoffs"
+
+[[concepts]]
+id = "shift-test"
+term = "shift test"
+context = "model-evaluation"
+definition = "The shift test compares a feature computed from the history cut at the cutoff with the same feature computed from the whole series."
+section = "check-a-backtest-for-leakage"
+example = "leakage-shift-check"
+
+[[concepts]]
+id = "trailing-mean"
+term = "trailing mean"
+context = "feature-engineering"
+definition = "a trailing mean: the average of the 24 hours up to and including each hour, which reads nothing after its hour"
+section = "check-a-backtest-for-leakage"
+example = "leakage-shift-check"
+
+[[concepts]]
+id = "history-half"
+term = "history half"
+context = "model-evaluation"
+definition = "The history half compares each feature on the rows of the eight weeks before each of the three evaluation cutoffs"
+section = "check-a-backtest-for-leakage"
+example = "leakage-shift-check"
+
+[concepts.relations]
+part-of = ["shift-test"]
+contrasts-with = ["target-half"]
+
+[[concepts]]
+id = "target-half"
+term = "target half"
+context = "model-evaluation"
+definition = "The target half compares the 24 hours that each cutoff forecasts, computed from the readings before the cutoff only."
+section = "check-a-backtest-for-leakage"
+example = "leakage-shift-check"
+
+[concepts.relations]
+part-of = ["shift-test"]
+
+[[concepts]]
+id = "level"
+term = "level"
+context = "time-series-forecasting"
+definition = "The level of a series is its typical reading"
+section = "why-a-statistical-model-comes-next"
+
+[[concepts]]
+id = "trend"
+term = "trend"
+context = "time-series-forecasting"
+definition = "the trend is the slow drift of the level"
+section = "why-a-statistical-model-comes-next"
+
+[concepts.relations]
+part-of = ["ets"]
+
+[[concepts]]
+id = "season"
+term = "season"
+context = "time-series-forecasting"
+definition = "the season is the daily shape of the load"
+section = "why-a-statistical-model-comes-next"
+
+[concepts.relations]
+part-of = ["ets"]
+
+[[concepts]]
+id = "statistical-model"
+term = "statistical model"
+context = "time-series-forecasting"
+definition = "A statistical model holds an estimate of each part of the state of a series, updates the estimates as each reading arrives, and projects them over the horizon."
+section = "why-a-statistical-model-comes-next"
+example = "autoets-subset-backtest"
+
+[concepts.relations]
+narrower = ["ets", "arima"]
+contrasts-with = ["seasonal-naive"]
+
+[[concepts]]
+id = "per-client-model"
+term = "per-client model"
+context = "time-series-forecasting"
+definition = "A per-client model is one fit for each client, on that client's history alone, so the cost is one fit per client per window."
+section = "why-a-statistical-model-comes-next"
+example = "autoets-subset-backtest"
+
+[[concepts]]
+id = "exponential-smoothing"
+term = "exponential smoothing"
+context = "time-series-forecasting"
+definition = "Exponential smoothing moves its level toward each new reading."
+formula = "level_t = alpha * y_t + (1 - alpha) * level_(t-1)"
+section = "fit-exponential-smoothing"
+
+[concepts.relations]
+prerequisite-of = ["ets"]
+
+[[concepts]]
+id = "alpha"
+term = "alpha"
+context = "time-series-forecasting"
+definition = "The constant alpha, between 0 and 1, sets how fast the level follows the data."
+section = "fit-exponential-smoothing"
+
+[concepts.relations]
+part-of = ["exponential-smoothing"]
+
+[[concepts]]
+id = "ets"
+term = "ETS"
+context = "time-series-forecasting"
+definition = "ETS, for error, trend and season, extends the simplest form of exponential smoothing."
+section = "fit-exponential-smoothing"
+example = "autoets-subset-backtest"
+
+[concepts.relations]
+prerequisite-of = ["autoets"]
+
+[[concepts]]
+id = "arima"
+term = "ARIMA"
+context = "time-series-forecasting"
+definition = "An ARIMA model writes the next reading as a weighted sum of earlier readings and earlier errors, after differencing"
+formula = "ARIMA(p,d,q)(P,D,Q)[m]"
+section = "fit-a-fixed-seasonal-arima"
+example = "arima-subset-backtest"
+
+[[concepts]]
+id = "differencing"
+term = "differencing"
+context = "time-series-forecasting"
+definition = "differencing: subtracting a reading from the reading one season earlier"
+section = "fit-a-fixed-seasonal-arima"
+
+[concepts.relations]
+part-of = ["arima"]
+
+[[concepts]]
+id = "step-back-operator"
+term = "step back operator"
+context = "time-series-forecasting"
+definition = "B the step back operator, so that B y_t is y_(t-1)"
+section = "fit-a-fixed-seasonal-arima"
+
+[[concepts]]
+id = "late-starter"
+term = "late starter"
+context = "time-series-forecasting"
+definition = "A late starter is a client whose first reading falls inside the history its model reads."
+section = "meet-the-late-starters"
+example = "late-starter-trim"
+
+[concepts.relations]
+prerequisite-of = ["start-rule"]
+
+[[concepts]]
+id = "start-rule"
+term = "start rule"
+context = "time-series-forecasting"
+definition = "The start rule says that a series begins at its first reading."
+section = "start-each-series-at-its-first-reading"
+example = "late-starter-trim"
+
+[[concepts]]
+id = "autoarima"
+term = "AutoARIMA"
+context = "time-series-forecasting"
+definition = "AutoARIMA searches for the orders instead of fixing them."
+section = "why-the-book-avoids-autoarima"
+applies_to = ["statsforecast"]
+
+[concepts.relations]
+implemented-by = [{ to = "statsforecast", versions = ">=2.1" }]
+
+[[concepts]]
+id = "feature-table"
+term = "feature table"
+context = "feature-engineering"
+definition = "A feature table has one row for each hour a model must predict."
+section = "turn-history-into-features"
+example = "lgbm-feature-sets"
+
+[[concepts]]
+id = "target"
+term = "target"
+context = "feature-engineering"
+definition = "Each row of a feature table holds the value to predict, which the book calls the target"
+section = "turn-history-into-features"
+
+[concepts.relations]
+part-of = ["feature-table"]
+
+[[concepts]]
+id = "feature"
+term = "feature"
+aliases = ["features"]
+context = "feature-engineering"
+definition = "the features: the readings and facts the model may use for the row's hour."
+section = "turn-history-into-features"
+
+[concepts.relations]
+part-of = ["feature-table"]
+
+[[concepts]]
+id = "training-row"
+term = "training row"
+aliases = ["training rows"]
+context = "feature-engineering"
+definition = "Training rows are the hours of the history before the cutoff, each with its own features and its own reading as the target."
+section = "turn-history-into-features"
+
+[concepts.relations]
+part-of = ["feature-table"]
+contrasts-with = ["forecast-row"]
+
+[[concepts]]
+id = "forecast-row"
+term = "forecast row"
+aliases = ["forecast rows"]
+context = "feature-engineering"
+definition = "Forecast rows are the 24 hours after the cutoff, with features but no target."
+section = "turn-history-into-features"
+
+[concepts.relations]
+part-of = ["feature-table"]
+
+[[concepts]]
+id = "lag"
+term = "lag"
+aliases = ["lags", "lag feature"]
+context = "feature-engineering"
+definition = "The lag of k hours for the hour t is the reading at t minus k."
+section = "add-lags-the-forecast-can-see"
+example = "lgbm-feature-sets"
+
+[concepts.relations]
+broader = ["feature"]
+
+[[concepts]]
+id = "calendar-feature"
+term = "calendar feature"
+aliases = ["calendar features"]
+context = "feature-engineering"
+definition = "Calendar features, unlike lags, are facts about the target hour itself: its hour of day, its day of the week and its month."
+section = "add-calendar-and-holidays"
+example = "lgbm-feature-sets"
+
+[concepts.relations]
+broader = ["feature"]
+contrasts-with = ["lag"]
+
+[[concepts]]
+id = "decision-window"
+term = "decision window"
+aliases = ["decision windows"]
+context = "model-evaluation"
+definition = "Decision windows are the windows the feature set is chosen on, never the standard cutoffs, which are the windows the book reports."
+section = "choose-on-decision-windows"
+example = "lgbm-feature-sets"
+
+[[concepts]]
+id = "pooled-mae"
+term = "pooled MAE"
+context = "model-evaluation"
+definition = "The pooled MAE is the MAE over every client-hour in the windows, the single number for the whole supplier."
+section = "measure-what-each-feature-adds"
+example = "lgbm-feature-sets"
+
+[concepts.relations]
+contrasts-with = ["mean-per-client-mase"]
+
+[[concepts]]
+id = "mean-per-client-mase"
+term = "mean per-client MASE"
+context = "model-evaluation"
+definition = "The mean per-client MASE is MASE for each client, averaged over the eight clients."
+section = "measure-what-each-feature-adds"
+example = "lgbm-feature-sets"
+
+[concepts.relations]
+computed-from = ["mase"]
+
+[[concepts]]
+id = "local-standard-scaler"
+term = "LocalStandardScaler"
+context = "feature-engineering"
+definition = "mlforecast's `LocalStandardScaler` (`mlforecast/target_transforms.py`), which subtracts the client's mean and divides by its standard deviation."
+section = "measure-what-each-feature-adds"
+example = "lgbm-feature-sets"
+applies_to = ["mlforecast"]
+
+[concepts.relations]
+implemented-by = [{ to = "mlforecast" }]
+
+[[concepts]]
+id = "recursive-prediction"
+term = "recursive prediction"
+context = "time-series-forecasting"
+definition = "In recursive prediction, for a 24-hour horizon, `MLForecast` forecasts one hour, writes that forecast back as the reading for the next hour, and repeats (`_predict_recursive` in `mlforecast/core.py`)."
+section = "catch-a-lag-that-leaks"
+applies_to = ["mlforecast"]
+
+[concepts.relations]
+implemented-by = [{ to = "mlforecast" }]
+
+[[concepts]]
+id = "global-model"
+term = "global model"
+aliases = ["global models", "global method", "global methods"]
+context = "time-series-forecasting"
+definition = "A global model fits one set of parameters to many series in a single pass, so every client contributes to what it learns."
+section = "one-model-for-many-clients"
+example = "global-model-thirty-clients"
+
+[concepts.relations]
+contrasts-with = ["local-method", "per-client-model"]
+
+[[concepts]]
+id = "local-method"
+term = "local method"
+aliases = ["local methods"]
+context = "time-series-forecasting"
+definition = "local methods, which fit each series on its own"
+section = "one-model-for-many-clients"
+
+[[concepts]]
+id = "long-format"
+term = "long format"
+definition = "The data is held in long format: one row per client and hour, with three columns."
+section = "one-model-for-many-clients"
+
+[[concepts]]
+id = "client-identifier"
+term = "client identifier"
+context = "feature-engineering"
+definition = "A client identifier puts the client in the table as a static categorical feature."
+section = "identify-each-client"
+example = "client-identifier-check"
+
+[concepts.relations]
+broader = ["feature"]
+
+[[concepts]]
+id = "coherent"
+term = "coherent"
+aliases = ["coherence"]
+context = "time-series-forecasting"
+definition = "Forecasts that add up are called coherent."
+section = "why-the-total-needs-a-check"
+example = "total-bottom-up-and-direct"
+
+[concepts.relations]
+prerequisite-of = ["bottom-up", "top-down", "mint"]
+
+[[concepts]]
+id = "bottom-up"
+term = "bottom-up"
+aliases = ["bottom-up total"]
+context = "time-series-forecasting"
+definition = "Bottom-up forecasts the bottom level, here the clients, and sums the results."
+section = "why-the-total-needs-a-check"
+example = "total-bottom-up-and-direct"
+
+[concepts.relations]
+contrasts-with = ["top-down"]
+computed-from = ["global-model"]
+
+[[concepts]]
+id = "top-down"
+term = "top-down"
+aliases = ["top-down split"]
+context = "time-series-forecasting"
+definition = "Top-down forecasts the top, the total, and splits it down by proportions."
+section = "why-the-total-needs-a-check"
+example = "total-split-by-share"
+
+[concepts.relations]
+computed-from = ["direct-total", "share"]
+
+[[concepts]]
+id = "mint"
+term = "MinT"
+context = "time-series-forecasting"
+definition = "MinT chooses the coherent forecasts that minimise the mean squared error of the coherent forecasts, under an unbiasedness assumption"
+section = "why-the-total-needs-a-check"
+
+[[concepts]]
+id = "direct-total"
+term = "direct total"
+context = "time-series-forecasting"
+definition = "The direct total is one model fitted to the total series itself."
+section = "forecast-the-total-directly"
+example = "total-bottom-up-and-direct"
+
+[concepts.relations]
+contrasts-with = ["bottom-up"]
+
+[[concepts]]
+id = "share"
+term = "share"
+context = "time-series-forecasting"
+definition = "A client's share is its readings over its own history, the 1,344 hours before the cutoff, divided by the total's readings over the same hours."
+section = "split-a-total-by-share"
+example = "total-split-by-share"
+
+[[concepts]]
+id = "oracle-check"
+term = "oracle check"
+context = "model-evaluation"
+definition = "A check this chapter calls the oracle check applies the shares to the actual total, which no forecast can know"
+section = "split-a-total-by-share"
+example = "total-split-by-share"
+
+[concepts.relations]
+computed-from = ["share"]
+
+[[concepts]]
+id = "prediction-interval"
+term = "prediction interval"
+aliases = ["band"]
+definition = "A prediction interval gives a lower and an upper bound for each hour."
+section = "why-one-number-is-not-enough"
+
+[[concepts]]
+id = "level"
+term = "level"
+context = "model-evaluation"
+definition = "A prediction interval's level, such as 80 or 95, is the share of readings the bounds should contain."
+section = "why-one-number-is-not-enough"
+
+[concepts.relations]
+part-of = ["prediction-interval"]
+
+[[concepts]]
+id = "coverage"
+term = "coverage"
+context = "model-evaluation"
+definition = "The share of readings the bounds contain is the coverage"
+section = "why-one-number-is-not-enough"
+example = "conformal-earlier-windows"
+
+[concepts.relations]
+measured-from = ["prediction-interval"]
+
+[[concepts]]
+id = "residual"
+term = "residual"
+definition = "A residual is the error of an earlier forecast: the reading minus the forecast, `e = y - f`."
+formula = "e = y - f"
+section = "build-intervals-from-residuals"
+example = "conformal-earlier-windows"
+
+[concepts.relations]
+prerequisite-of = ["conformal-prediction"]
+
+[[concepts]]
+id = "conformal-prediction"
+term = "conformal prediction"
+definition = "Conformal prediction builds a band from the residuals of forecasts made the same way on earlier days."
+section = "build-intervals-from-residuals"
+example = "conformal-three-windows"
+
+[concepts.relations]
+computed-from = ["residual", "calibration-window"]
+implemented-by = [{ to = "mlforecast" }, { to = "statsforecast" }]
+
+[[concepts]]
+id = "calibration-window"
+term = "calibration window"
+aliases = ["calibration windows"]
+context = "time-series-forecasting"
+definition = "A calibration window is a cutoff whose residuals size the bands."
+section = "build-intervals-from-residuals"
+example = "conformal-earlier-windows"
+
+[concepts.relations]
+broader = ["cutoff"]
+
+[[concepts]]
+id = "interval-score"
+term = "interval score"
+context = "model-evaluation"
+definition = "The interval score adds a band's width to a penalty for each reading that misses the band, the penalty growing with the distance of the miss and scaled by 2 over the miss rate"
+section = "calibrate-on-earlier-windows"
+example = "conformal-decision-windows"
+
+[concepts.relations]
+measured-from = ["prediction-interval"]
+
+[[concepts]]
+id = "finite-sample-levels"
+term = "finite-sample levels"
+aliases = ["finite-sample correction"]
+definition = "Each new residual is one more among n + 1, so the finite-sample levels move outward a little: each quantile level moves to `floor((n + 1) * a) / n` for the lower bound and `ceil((n + 1) * (1 - a)) / n` for the upper, where `n` is the number of residuals and `a` the tail share."
+section = "calibrate-on-earlier-windows"
+example = "conformal-decision-windows"
+
+[[concepts]]
+id = "coverage-gap"
+term = "coverage gap"
+context = "model-evaluation"
+definition = "Barber and co-authors (2023) call the loss in coverage when exchangeability fails a coverage gap."
+section = "measure-coverage-on-held-out-days"
+
+[concepts.relations]
+measured-from = ["coverage"]
+
+[[concepts]]
+id = "critical-fractile"
+term = "critical fractile"
+definition = "The level `cu / (cu + co)` is the critical fractile of the newsvendor model."
+formula = "tau = cu / (cu + co)"
+section = "choose-the-level-from-the-cost-of-error"
+example = "buy-ahead-level-by-cost"
+
+[[concepts]]
+id = "quantile-loss"
+term = "quantile loss"
+aliases = ["pinball loss"]
+context = "model-evaluation"
+definition = "The quantile loss is `tau * (y - q)` when the reading `y` is at or above the purchase `q`, and `(1 - tau) * (q - y)` when it is below."
+section = "choose-the-level-from-the-cost-of-error"
+example = "buy-ahead-level-by-cost"
+
+[[concepts]]
+id = "prophet"
+term = "Prophet"
+context = "time-series-forecasting"
+definition = "Prophet writes a series as a trend, plus Fourier seasonal terms, plus holiday effects, plus an error term."
+section = "where-prophet-fits"
+example = "prophet-thirty-clients-backtest"
+applies_to = ["prophet"]
+
+[concepts.relations]
+implemented-by = [{ to = "prophet" }]
+
+[[concepts]]
+id = "maximum-a-posteriori-estimate"
+term = "maximum a posteriori estimate"
+definition = "By default Prophet's fit is a maximum a posteriori estimate, an optimisation rather than a set of sampled draws."
+section = "where-prophet-fits"
+applies_to = ["prophet"]
+
+[[concepts]]
+id = "holiday-table"
+term = "holiday table"
+context = "time-series-forecasting"
+definition = "Prophet takes holidays as a table of dates and effects"
+section = "where-prophet-fits"
+example = "prophet-holiday-decision"
+applies_to = ["prophet"]
+
+[concepts.relations]
+part-of = ["prophet"]
+
+[[concepts]]
+id = "foundation-model"
+term = "foundation model"
+context = "time-series-forecasting"
+definition = "A foundation model is trained once on many series and then applied to a context, with no fitting on that series."
+section = "load-a-recorded-foundation-model"
+
+[[concepts]]
+id = "chronos-2"
+term = "Chronos-2"
+context = "time-series-forecasting"
+definition = "Chronos-2 is an encoder-only transformer that takes a context of past values and outputs quantiles for the next steps"
+section = "load-a-recorded-foundation-model"
+example = "recorded-chronos2-score"
+
+[concepts.relations]
+broader = ["foundation-model"]
+
+[[concepts]]
+id = "cross-learning"
+term = "cross-learning"
+context = "time-series-forecasting"
+definition = "Cross-learning, which would let one series inform another, is off by default"
+section = "load-a-recorded-foundation-model"
+
+[[concepts]]
+id = "nhits"
+term = "NHITS"
+context = "time-series-forecasting"
+definition = "NHITS is a neural forecaster from the neuralforecast library, which packages neural forecasters for panels of series."
+section = "why-this-edition-has-no-neural-model"
+example = "recorded-nhits-score"
+
+[[concepts]]
+id = "refit"
+term = "refit"
+context = "time-series-forecasting"
+definition = "A refit re-estimates the model's parameters on the history known at a cutoff."
+section = "refit-on-a-schedule"
+example = "refit-cadence-decision"
+
+[[concepts]]
+id = "forecast-log"
+term = "forecast log"
+context = "time-series-forecasting"
+definition = "A forecast log is a table with one row for each client and hour."
+section = "log-every-forecast-before-actuals"
+example = "rolling-refit-seven-days"
+
+[[concepts]]
+id = "rebuilt-log"
+term = "rebuilt log"
+context = "time-series-forecasting"
+definition = "A rebuilt log is leakage in disguise, because it knows what the forecast should have been."
+section = "log-every-forecast-before-actuals"
+
+[[concepts]]
+id = "daily-mase"
+term = "daily MASE"
+context = "model-evaluation"
+definition = "The daily MASE takes each client's mean absolute error over the day's 24 hours, divides it by the client's scale, and averages the results over the thirty clients"
+formula = "daily MASE = mean over clients of (MAE over the day's 24 hours / scale)"
+section = "score-the-log-as-actuals-arrive"
+example = "drift-flag-rolling"
+
+[concepts.relations]
+computed-from = ["mase"]
+
+[[concepts]]
+id = "forward-fill"
+term = "forward fill"
+definition = "Forward fill repeats the last reading that arrived."
+section = "score-the-log-as-actuals-arrive"
+example = "late-fill-decision"
+
+[[concepts]]
+id = "flag"
+term = "flag"
+context = "model-evaluation"
+definition = "A day is flagged when its daily MASE is above twice a reference."
+section = "flag-drift-against-the-backtest"
+example = "drift-flag-rolling"
+
+[concepts.relations]
+computed-from = ["daily-mase"]
+
+[[concepts]]
+id = "retiring-a-model"
+term = "retiring a model"
+aliases = ["retire a model"]
+context = "time-series-forecasting"
+definition = "Retiring a model means stopping its use and replacing it."
+section = "know-when-to-retire-a-model"
+
+[concepts.relations]
+contrasts-with = ["refit"]
+
+[[concepts]]
+id = "sustained-drift"
+term = "sustained drift"
+context = "time-series-forecasting"
+definition = "The first retirement trigger is sustained drift: flags on consecutive days with no calendar cause."
+section = "know-when-to-retire-a-model"
+example = "drift-after-a-change"
+
+[concepts.relations]
+measured-from = ["flag"]
+
+[[concepts]]
+id = "uncovered-band"
+term = "uncovered band"
+context = "time-series-forecasting"
+definition = "The second retirement trigger is an uncovered band: the 80% band covers well under 80% of readings on several days."
+section = "know-when-to-retire-a-model"
+example = "drift-after-a-change"
+
+[concepts.relations]
+measured-from = ["coverage"]
+
+[[concepts]]
+id = "monitoring-system"
+term = "monitoring system"
+definition = "A monitoring system covers alerts, dashboards, data quality across many feeds and the people who respond."
+section = "know-when-to-retire-a-model"
+
+[[concepts]]
+id = "poisoning-check"
+term = "poisoning check"
+context = "model-evaluation"
+definition = "The poisoning check writes wrong values over every reading after a cutoff, then confirms that the refit and the forecast at that cutoff do not move."
+section = "what-goes-wrong-ch10"
