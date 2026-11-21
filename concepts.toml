@@ -54,6 +54,7 @@ definition = "A time series is a sequence of readings in time order."
 section = "load-one-clients-demand"
 example = "load-lead-client"
 
+wikidata = "Q186588"
 [[concepts]]
 id = "gap-hour"
 term = "gap hour"
@@ -152,6 +153,7 @@ definition = "The mean absolute error, MAE, is the average size of the miss"
 formula = "MAE = mean(abs(actual - forecast))"
 section = "score-on-a-held-out-week"
 example = "seasonal-naive-next-day"
+wikidata = "Q6803609"
 
 [concepts.relations]
 broader = ["score"]
@@ -167,6 +169,7 @@ definition = "The root mean squared error, RMSE, is RMSE = sqrt(mean((actual - f
 formula = "RMSE = sqrt(mean((actual - forecast)^2))"
 section = "score-on-a-held-out-week"
 example = "seasonal-naive-next-day"
+wikidata = "Q29037"
 
 [concepts.relations]
 broader = ["score"]
@@ -196,6 +199,7 @@ term = "backtest"
 context = "model-evaluation"
 definition = "a backtest is the score of many windows, each made as it would have been made on its day"
 section = "why-a-baseline-comes-first"
+wikidata = "Q798528"
 
 [concepts.relations]
 prerequisite-of = ["leakage"]
@@ -246,6 +250,7 @@ definition = "MASE, the mean absolute scaled error, is the mean of the scaled er
 formula = "MASE = mean of |actual(t) - forecast(t)| / scale"
 section = "scale-errors-with-mase"
 example = "mase-scale-leak-check"
+wikidata = "Q6803610"
 
 [concepts.relations]
 computed-from = ["scaled-error"]
@@ -290,6 +295,7 @@ definition = "A backtest leaks when a window's model sees a reading from the hou
 section = "keep-the-future-out-of-history"
 example = "history-cut-check"
 
+wikidata = "Q85776087"
 [[concepts]]
 id = "fill"
 term = "fill"
@@ -400,6 +406,7 @@ context = "time-series-forecasting"
 definition = "Exponential smoothing moves its level toward each new reading."
 formula = "level_t = alpha * y_t + (1 - alpha) * level_(t-1)"
 section = "fit-exponential-smoothing"
+wikidata = "Q775837"
 
 [concepts.relations]
 prerequisite-of = ["ets"]
@@ -434,6 +441,7 @@ formula = "ARIMA(p,d,q)(P,D,Q)[m]"
 section = "fit-a-fixed-seasonal-arima"
 example = "arima-subset-backtest"
 
+wikidata = "Q2566298"
 [[concepts]]
 id = "differencing"
 term = "differencing"
@@ -451,6 +459,7 @@ context = "time-series-forecasting"
 definition = "B the step back operator, so that B y_t is y_(t-1)"
 section = "fit-a-fixed-seasonal-arima"
 
+wikidata = "Q3354622"
 [[concepts]]
 id = "late-starter"
 term = "late starter"
@@ -507,6 +516,7 @@ aliases = ["features"]
 context = "feature-engineering"
 definition = "the features: the readings and facts the model may use for the row's hour."
 section = "turn-history-into-features"
+wikidata = "Q42139305"
 
 [concepts.relations]
 part-of = ["feature-table"]
@@ -735,6 +745,7 @@ aliases = ["band"]
 definition = "A prediction interval gives a lower and an upper bound for each hour."
 section = "why-one-number-is-not-enough"
 
+wikidata = "Q1106171"
 [[concepts]]
 id = "level"
 term = "level"
@@ -855,6 +866,7 @@ definition = "By default Prophet's fit is a maximum a posteriori estimate, an op
 section = "where-prophet-fits"
 applies_to = ["prophet"]
 
+wikidata = "Q635384"
 [[concepts]]
 id = "holiday-table"
 term = "holiday table"
