@@ -197,6 +197,9 @@ context = "model-evaluation"
 definition = "a backtest is the score of many windows, each made as it would have been made on its day"
 section = "why-a-baseline-comes-first"
 
+[concepts.relations]
+prerequisite-of = ["leakage"]
+
 [[concepts]]
 id = "naive"
 term = "naive"
@@ -295,6 +298,9 @@ definition = "The fill is the mean of the hour before and the hour after, taken 
 section = "mark-clock-change-hours-as-missing"
 example = "clock-gap-daily-cutoffs"
 
+[concepts.relations]
+computed-from = ["history"]
+
 [[concepts]]
 id = "shift-test"
 term = "shift test"
@@ -310,6 +316,9 @@ context = "feature-engineering"
 definition = "a trailing mean: the average of the 24 hours up to and including each hour, which reads nothing after its hour"
 section = "check-a-backtest-for-leakage"
 example = "leakage-shift-check"
+
+[concepts.relations]
+broader = ["feature"]
 
 [[concepts]]
 id = "history-half"
@@ -340,6 +349,9 @@ term = "level"
 context = "time-series-forecasting"
 definition = "The level of a series is its typical reading"
 section = "why-a-statistical-model-comes-next"
+
+[concepts.relations]
+part-of = ["time-series"]
 
 [[concepts]]
 id = "trend"
@@ -556,6 +568,9 @@ context = "model-evaluation"
 definition = "Decision windows are the windows the feature set is chosen on, never the standard cutoffs, which are the windows the book reports."
 section = "choose-on-decision-windows"
 example = "lgbm-feature-sets"
+
+[concepts.relations]
+broader = ["time-series-forecasting/window"]
 
 [[concepts]]
 id = "pooled-mae"
@@ -908,6 +923,10 @@ context = "time-series-forecasting"
 definition = "A rebuilt log is leakage in disguise, because it knows what the forecast should have been."
 section = "log-every-forecast-before-actuals"
 
+[concepts.relations]
+broader = ["model-evaluation/leakage"]
+contrasts-with = ["forecast-log"]
+
 [[concepts]]
 id = "daily-mase"
 term = "daily MASE"
@@ -976,6 +995,9 @@ id = "monitoring-system"
 term = "monitoring system"
 definition = "A monitoring system covers alerts, dashboards, data quality across many feeds and the people who respond."
 section = "know-when-to-retire-a-model"
+
+[concepts.relations]
+contrasts-with = ["time-series-forecasting/forecast-log", "model-evaluation/flag", "model-evaluation/coverage"]
 
 [[concepts]]
 id = "poisoning-check"
