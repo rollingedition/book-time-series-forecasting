@@ -54,6 +54,7 @@ definition = "A time series is a sequence of readings in time order."
 section = "load-one-clients-demand"
 example = "load-lead-client"
 
+wikidata = "Q186588"
 [[concepts]]
 id = "gap-hour"
 term = "gap hour"
@@ -135,13 +136,13 @@ example = "seasonal-naive-next-day"
 [[concepts]]
 id = "error"
 term = "error"
-context = "model-evaluation"
+context = "time-series-forecasting"
 definition = "The error of an hour is the actual demand minus the forecast."
 section = "score-on-a-held-out-week"
 example = "seasonal-naive-next-day"
 
 [concepts.relations]
-prerequisite-of = ["score"]
+prerequisite-of = ["model-evaluation/score"]
 
 [[concepts]]
 id = "mae"
@@ -152,10 +153,11 @@ definition = "The mean absolute error, MAE, is the average size of the miss"
 formula = "MAE = mean(abs(actual - forecast))"
 section = "score-on-a-held-out-week"
 example = "seasonal-naive-next-day"
+wikidata = "Q6803609"
 
 [concepts.relations]
 broader = ["score"]
-computed-from = ["error"]
+computed-from = ["time-series-forecasting/error"]
 implemented-by = [{ to = "utilsforecast", versions = ">=0.2" }]
 
 [[concepts]]
@@ -167,10 +169,11 @@ definition = "The root mean squared error, RMSE, is RMSE = sqrt(mean((actual - f
 formula = "RMSE = sqrt(mean((actual - forecast)^2))"
 section = "score-on-a-held-out-week"
 example = "seasonal-naive-next-day"
+wikidata = "Q29037"
 
 [concepts.relations]
 broader = ["score"]
-computed-from = ["error"]
+computed-from = ["time-series-forecasting/error"]
 contrasts-with = ["mae"]
 implemented-by = [{ to = "utilsforecast", versions = ">=0.2" }]
 
@@ -196,6 +199,10 @@ term = "backtest"
 context = "model-evaluation"
 definition = "a backtest is the score of many windows, each made as it would have been made on its day"
 section = "why-a-baseline-comes-first"
+wikidata = "Q798528"
+
+[concepts.relations]
+prerequisite-of = ["leakage"]
 
 [[concepts]]
 id = "naive"
@@ -231,7 +238,7 @@ section = "scale-errors-with-mase"
 example = "mase-scale-leak-check"
 
 [concepts.relations]
-computed-from = ["error"]
+computed-from = ["time-series-forecasting/error"]
 prerequisite-of = ["mase"]
 
 [[concepts]]
@@ -243,6 +250,7 @@ definition = "MASE, the mean absolute scaled error, is the mean of the scaled er
 formula = "MASE = mean of |actual(t) - forecast(t)| / scale"
 section = "scale-errors-with-mase"
 example = "mase-scale-leak-check"
+wikidata = "Q6803610"
 
 [concepts.relations]
 computed-from = ["scaled-error"]
@@ -287,6 +295,7 @@ definition = "A backtest leaks when a window's model sees a reading from the hou
 section = "keep-the-future-out-of-history"
 example = "history-cut-check"
 
+wikidata = "Q85776087"
 [[concepts]]
 id = "fill"
 term = "fill"
@@ -294,6 +303,9 @@ context = "time-series-forecasting"
 definition = "The fill is the mean of the hour before and the hour after, taken from the history before the cutoff only."
 section = "mark-clock-change-hours-as-missing"
 example = "clock-gap-daily-cutoffs"
+
+[concepts.relations]
+computed-from = ["history"]
 
 [[concepts]]
 id = "shift-test"
@@ -310,6 +322,9 @@ context = "feature-engineering"
 definition = "a trailing mean: the average of the 24 hours up to and including each hour, which reads nothing after its hour"
 section = "check-a-backtest-for-leakage"
 example = "leakage-shift-check"
+
+[concepts.relations]
+broader = ["feature"]
 
 [[concepts]]
 id = "history-half"
@@ -340,6 +355,9 @@ term = "level"
 context = "time-series-forecasting"
 definition = "The level of a series is its typical reading"
 section = "why-a-statistical-model-comes-next"
+
+[concepts.relations]
+part-of = ["time-series"]
 
 [[concepts]]
 id = "trend"
@@ -388,6 +406,7 @@ context = "time-series-forecasting"
 definition = "Exponential smoothing moves its level toward each new reading."
 formula = "level_t = alpha * y_t + (1 - alpha) * level_(t-1)"
 section = "fit-exponential-smoothing"
+wikidata = "Q775837"
 
 [concepts.relations]
 prerequisite-of = ["ets"]
@@ -422,6 +441,7 @@ formula = "ARIMA(p,d,q)(P,D,Q)[m]"
 section = "fit-a-fixed-seasonal-arima"
 example = "arima-subset-backtest"
 
+wikidata = "Q2566298"
 [[concepts]]
 id = "differencing"
 term = "differencing"
@@ -439,6 +459,7 @@ context = "time-series-forecasting"
 definition = "B the step back operator, so that B y_t is y_(t-1)"
 section = "fit-a-fixed-seasonal-arima"
 
+wikidata = "Q3354622"
 [[concepts]]
 id = "late-starter"
 term = "late starter"
@@ -486,6 +507,7 @@ section = "turn-history-into-features"
 
 [concepts.relations]
 part-of = ["feature-table"]
+close-to = ["https://rollingedition.com/concepts/natural-language-processing/target"]
 
 [[concepts]]
 id = "feature"
@@ -494,9 +516,11 @@ aliases = ["features"]
 context = "feature-engineering"
 definition = "the features: the readings and facts the model may use for the row's hour."
 section = "turn-history-into-features"
+wikidata = "Q42139305"
 
 [concepts.relations]
 part-of = ["feature-table"]
+close-to = ["https://rollingedition.com/concepts/search-and-recommendation/feature"]
 
 [[concepts]]
 id = "training-row"
@@ -554,6 +578,9 @@ context = "model-evaluation"
 definition = "Decision windows are the windows the feature set is chosen on, never the standard cutoffs, which are the windows the book reports."
 section = "choose-on-decision-windows"
 example = "lgbm-feature-sets"
+
+[concepts.relations]
+broader = ["time-series-forecasting/window"]
 
 [[concepts]]
 id = "pooled-mae"
@@ -718,6 +745,7 @@ aliases = ["band"]
 definition = "A prediction interval gives a lower and an upper bound for each hour."
 section = "why-one-number-is-not-enough"
 
+wikidata = "Q1106171"
 [[concepts]]
 id = "level"
 term = "level"
@@ -838,6 +866,7 @@ definition = "By default Prophet's fit is a maximum a posteriori estimate, an op
 section = "where-prophet-fits"
 applies_to = ["prophet"]
 
+wikidata = "Q635384"
 [[concepts]]
 id = "holiday-table"
 term = "holiday table"
@@ -905,6 +934,10 @@ term = "rebuilt log"
 context = "time-series-forecasting"
 definition = "A rebuilt log is leakage in disguise, because it knows what the forecast should have been."
 section = "log-every-forecast-before-actuals"
+
+[concepts.relations]
+broader = ["model-evaluation/leakage"]
+contrasts-with = ["forecast-log"]
 
 [[concepts]]
 id = "daily-mase"
@@ -975,9 +1008,15 @@ term = "monitoring system"
 definition = "A monitoring system covers alerts, dashboards, data quality across many feeds and the people who respond."
 section = "know-when-to-retire-a-model"
 
+[concepts.relations]
+contrasts-with = ["time-series-forecasting/forecast-log", "model-evaluation/flag", "model-evaluation/coverage"]
+
 [[concepts]]
 id = "poisoning-check"
 term = "poisoning check"
 context = "model-evaluation"
 definition = "The poisoning check writes wrong values over every reading after a cutoff, then confirms that the refit and the forecast at that cutoff do not move."
 section = "what-goes-wrong-ch10"
+
+[retired]
+"model-evaluation/error" = "time-series-forecasting/error"
