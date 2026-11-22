@@ -57,6 +57,12 @@ Two choices in this design were made on the decision windows, not on the held-ou
 
 [Example: conformal-decision-windows](../examples/conformal-decision-windows.py)
 
+{{fig:client-coverage-scaled}} plots each client's coverage at 80 as a dot, sorted, for each variant. Without the scale, {{out:figure-client-coverage-scaled:unscaled residuals, clients within 0.1 of 0.8}} of the thirty clients sit within 0.1 of the 0.8 target; with it, {{out:figure-client-coverage-scaled:scaled residuals, clients within 0.1 of 0.8}} do.
+
+![With the scale, more clients' coverage at 80 sits near the dashed target line](../examples/figures/client-coverage-scaled.svg "Each client's coverage at 80 on the decision windows, sorted")
+
+[Example: figure-client-coverage-scaled](../examples/figure-client-coverage-scaled.py)
+
 Scaling wins on the two measures the variants were judged by, and loses only on the pooled coverage at 80. The worst-covered client's coverage at 80 rises from {{out:conformal-decision-windows:unscaled, lowest client coverage at 80}} to {{out:conformal-decision-windows:scaled, lowest client coverage at 80}}, and the interval score at 80 falls from {{out:conformal-decision-windows:unscaled, interval score at 80}} to {{out:conformal-decision-windows:scaled, interval score at 80}}. It falls at 95 as well, as the output shows.
 
 We judged the variants by these two measures because the pooled figure hides clients. We chose them after seeing the decision numbers, so the pooled figure is reported beside them. At 80 the pooled coverage is closer to its label without the scale, at {{out:conformal-decision-windows:unscaled, coverage at 80}} against {{out:conformal-decision-windows:scaled, coverage at 80}}. The scale stays.
@@ -106,6 +112,12 @@ Dependence also decides when the misses fall, which a coverage figure cannot sho
 The total's misses come in runs. The longest is {{out:total-band-miss-runs:longest run of missed hours}} hours outside the band in a row. The same hours in shuffled order give a longest run of {{out:total-band-miss-runs:longest run of missed hours, shuffled, mean}} on average, and only {{out:total-band-miss-runs:share of shuffles with a run this long}} of the shuffles reach one that long.
 
 The hour after a miss points the same way, because it missed too in {{out:total-band-miss-runs:misses followed by a miss}} of cases, against {{out:total-band-miss-runs:misses followed by a miss, shuffled, mean}} once the order is broken. So report how misses persist beside the coverage, such as the longest run of missed hours, since a supplier short for several hours in a row pays for all of them before the next day's purchase can respond.
+
+{{fig:total-band-misses}} shows where the misses fall.
+
+![The total's misses cluster in runs, the longest late on the last scored day](../examples/figures/total-band-misses.svg "The total's band at 80, its actual hours, and the hours outside the band")
+
+[Example: figure-total-band-misses](../examples/figure-total-band-misses.py)
 
 So the book promises nothing about coverage that it does not measure. The coverage in this chapter is what three days showed, under the calibration described in [Calibrate on earlier windows](#calibrate-on-earlier-windows).
 

@@ -1,4 +1,6 @@
-clients scored: 30
-clients where global beats seasonal naive: 23
-clients where seasonal naive wins: MT_001, MT_128, MT_141, MT_179, MT_217, MT_268, MT_294
+clients where seasonal naive has the lower MASE: 7
+margin that counts as narrow, MASE: 0.10
+clients where seasonal naive wins by less than that margin: 4
+largest margin where seasonal naive wins, MASE: 0.48
+client with the largest margin: MT_268
 figure: figures/client-mase-global-vs-naive.svg

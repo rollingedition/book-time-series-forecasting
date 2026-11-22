@@ -1,6 +1,6 @@
-"""Draw the average day of the total of the thirty clients, and of its largest client and the client whose day differs most,
-each divided by its own daily mean, so the shapes share one scale. The history is the one before the first standard cutoff.
-The lines print each peak hour and the mean absolute difference from the total's day, which the prose quotes."""
+"""Draw the average day of the total of the thirty clients, of the largest client and of a typical client, each divided by its
+own daily mean, on the history before the first standard cutoff. The typical client is the one in the middle, by gap, of the
+clients whose average day peaks at another hour from the total's; the lines print how it was chosen and the values the prose quotes."""
 import pandas as pd
 
 from lib.electricity import load
@@ -25,20 +25,23 @@ clients = panel_history(mask_clock_changes(raw)[["unique_id", "ds", "y"]], cut, 
 days = pd.DataFrame({uid: normalised(g) for uid, g in clients.groupby("unique_id")}).T   # one row per client, 24 hours
 largest = shares(raw, cut).idxmax()                               # the largest client by share of the total
 gap = (days - total_day).abs().mean(axis=1)                       # mean absolute difference from the total's day
-differs = gap.drop(largest).idxmax()                              # the most different shape, other than the largest client's
+peak = days.idxmax(axis=1)                                        # each client's peak hour
+elsewhere = gap[peak != total_day.idxmax()].sort_values()         # the clients peaking at another hour, by gap
+typical = elsewhere.index[len(elsewhere) // 2]                    # the one in the middle of them
+assert peak[typical] != total_day.idxmax()                        # the prose says the typical client peaks at another hour
 
-show("largest client share of the total, first cutoff", shares(raw, cut).max())
-show("peak hour of the total's average day", f"{total_day.idxmax():02d}:00")
-show("peak hour of the largest client's average day", f"{days.loc[largest].idxmax():02d}:00")
+show("clients whose average day peaks at a different hour from the total's", len(elsewhere))
+show("typical client, the median gap among those", typical)
+show("median gap across the thirty clients", gap.median())
 show("mean absolute difference from the total's day, largest client", gap[largest], digits=3)
-show("peak hour of the most different client's average day", f"{days.loc[differs].idxmax():02d}:00")
-show("mean absolute difference from the total's day, most different client", gap[differs], digits=3)
-show("clients whose day differs more than the largest client's", int((gap > gap[largest]).sum()))
+show("peak hour of the total's average day", f"{total_day.idxmax():02d}:00")
+show("peak hour of the typical client's average day", f"{peak[typical]:02d}:00")
+show("mean of the total's average day from 00:00 to 05:00, over its mean", total_day.loc[:5].mean())
 
 fig, ax = new_figure(height=2.8)
-ax.plot(total_day.index, total_day.values, color=ACCENT, linewidth=2.0, label="total of the thirty clients")
-ax.plot(days.columns, days.loc[largest].values, color=INK, label=f"largest client, {largest}")
-ax.plot(days.columns, days.loc[differs].values, color=MUTED, linestyle="--", label=f"most different shape, {differs}")
+ax.plot(total_day.index, total_day.values, color=INK, label="total of the thirty clients")
+ax.plot(days.columns, days.loc[largest].values, color=MUTED, linestyle="--", label=f"largest client, {largest}")
+ax.plot(days.columns, days.loc[typical].values, color=ACCENT, linewidth=2.0, label=f"typical client, {typical}")
 ax.set_xlabel("hour of the day")
 ax.set_ylabel("load over its daily mean")
 ax.set_xticks(range(0, 24, 3))
