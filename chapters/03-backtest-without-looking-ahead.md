@@ -22,6 +22,12 @@ A window has three parts: the cutoff, the horizon and the history. The cutoff is
 
 In words, each window's targets are the 24 hours from its cutoff, and its history is the readings from 1,344 hours before the cutoff up to, but not including, the cutoff. The next window moves both by one step. A reading can therefore be a target in one window and history in a later one. That is correct, because by the later cutoff the reading lies in the past, and it is the same reading in both places.
 
+{{fig:rolling-windows}} draws the first four Sunday windows of 2014. The upper panel shows each window's fixed history, {{out:figure-rolling-windows:fixed history hours per window}} hours, as a long bar, with its targets as a short dark bar at the cutoff. The cutoff steps forward {{out:figure-rolling-windows:step between cutoffs, days}} days each time. The lower panel shows the expanding history that `cross_validation` takes when `input_size` is not passed. It starts at the lead client's first reading, {{out:figure-rolling-windows:first reading of the series}}, and at the fourth window it holds {{out:figure-rolling-windows:expanding history hours at the last drawn window}} hours.
+
+![Each window's history is a fixed eight-week bar, while the expanding history starts at the first reading and grows with each cutoff](../examples/figures/rolling-windows.svg "Four Sunday windows of 2014: the fixed history and the expanding history")
+
+[Example: figure-rolling-windows](../examples/figure-rolling-windows.py)
+
 The Sunday sample runs seasonal naive over every Sunday of 2014, from Jan 5 to Dec 28, 2014. The EU puts every clock change on the last Sunday of March and of October ([Directive 2000/84/EC](https://eur-lex.europa.eu/eli/dir/2000/84/oj), Articles 2 and 3), and both changes of 2014, on Mar 30 and Oct 26, are in the sample. The sample uses [`SUBSET8`](#the-case-and-its-data), the book's eight-client subset. Here the year is scored on those eight clients, window by window:
 
 [Example: backtest-sundays-2014](../examples/backtest-sundays-2014.py)
@@ -73,6 +79,12 @@ The file mostly agrees with the dataset's note: {{out:clock-change-census:gap ro
 The data say zero or near zero, enough for the rule. The meter recorded nothing for an hour that did not occur on the clock, so the reading is not demand.
 
 Seasonal naive copies the last day's values forward, so the forecast for 01:00 on Mar 30 is the demand of Mar 29 at 01:00. That is an ordinary hour, and where the reading is zero, the error is the whole forecast.
+
+{{fig:march-gap-copied}} shows the lead client around the change. Its gap-hour reading is {{out:figure-march-gap-copied:gap hour reading, kWh}} kWh, and the next day's forecast with no rule copies it: at 1am it reads {{out:figure-march-gap-copied:next-day forecast at 1am, no rule, kWh}} kWh, against an actual of {{out:figure-march-gap-copied:actual at next-day 1am, kWh}} kWh.
+
+![The gap hour reads zero, and the next day's seasonal naive forecast copies that zero at the same hour](../examples/figures/march-gap-copied.svg "The lead client around the March change, and the forecast for the next day with no rule")
+
+[Example: figure-march-gap-copied](../examples/figure-march-gap-copied.py)
 
 Make a guess before the next run. The cutoff of Mar 31 looks back over 24 hours, and those hours include the zero. How large is the error at 01:00 on Mar 31 compared with an ordinary hour? The run covers the 15 daily cutoffs from Mar 23 to Apr 6, 2014, first with no rule and then with the rule from the next section:
 

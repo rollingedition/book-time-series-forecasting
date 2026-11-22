@@ -1,0 +1,10 @@
+first cutoff: Jan 5, 2014
+last cutoff drawn: Jan 26, 2014
+step between cutoffs, days: 7
+fixed history hours per window: 1344
+first history timestamp, first window: Nov 10, 2013 00:00
+target hours per window: 24
+first reading of the series: Jan 1, 2013 00:00
+expanding history hours at the first window: 8856
+expanding history hours at the last drawn window: 9360
+figure: figures/rolling-windows.svg

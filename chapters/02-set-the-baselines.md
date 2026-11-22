@@ -52,6 +52,12 @@ The totals hide where the errors sit. The week begins on Dec 25, 2014, a Portugu
 
 The day after the holiday is where copying costs seasonal naive. Its largest error of the week falls on {{out:naive-baselines-held-out-week:seasonal naive worst window}}, at {{out:naive-baselines-held-out-week:seasonal naive worst window MAE}} kWh, because that window copies the holiday's pattern. On that day naive is still the lowest, at {{out:naive-baselines-held-out-week:naive MAE Dec 26 window}} kWh.
 
+{{fig:baseline-window-errors}} draws seven windows, three bars a day: naive, seasonal naive, hatched average of weeks. The lowest bar changes {{out:figure-baseline-window-errors:changes of lowest baseline between neighbouring windows}} times; no baseline is lowest every day.
+
+![No baseline is lowest in every window, so one week names no winner](../examples/figures/baseline-window-errors.svg "Each baseline's MAE in each window")
+
+[Example: figure-baseline-window-errors](../examples/figure-baseline-window-errors.py)
+
 We recommend reporting all three baselines every time. Use seasonal naive as the main reference for [MASE](#scale-errors-with-mase), because it carries the daily cycle that makes hourly demand predictable, and keep naive beside it, because on some weeks the flat rule is the stronger one.
 
 **Working rule:** Start from naive and seasonal naive, both from the library, and add average of weeks when the series has a weekly rhythm worth testing. Check one forecast by hand against its formula before you rely on a baseline: pick one cutoff, compute one hour from the readings in its history, and compare the result with the forecast.

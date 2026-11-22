@@ -115,6 +115,15 @@ Read the table against the mean demand of {{out:seasonal-naive-next-day:mean dem
 AutoETS's errors are higher than the baseline's on both scores, as the table shows, with MAE at {{out:autoets-next-day:MAE}} kWh against {{out:seasonal-naive-next-day:MAE}}. The MAE is the number to plan with, because it is the typical miss in each hour. RMSE is always at least MAE. For normal errors RMSE is about 1.25 times MAE, so a ratio well above that means a few large misses. This section reads the two scores together and goes no further, because one client over one week cannot show the spread of the misses.
 
 Both models do worst around Christmas, but on different days. The daily lines show where: the baseline's worst day is Dec 26, the day after Christmas, when it copies Christmas Day, at {{out:seasonal-naive-next-day:MAE 2014-12-26}} kWh an hour, the largest of the 7. AutoETS's worst day is Dec 25 itself, at {{out:autoets-next-day:MAE 2014-12-25}} kWh, against {{out:seasonal-naive-next-day:MAE 2014-12-25}} for the baseline.
+
+{{fig:held-out-week-forecasts}} draws the held-out week's load with both forecasts, and the two days at Christmas are where to look. The thick line is the actual load. The dashed seasonal naive line repeats Christmas Day's readings on Dec 26, hour by hour, so it carries the holiday's low level into the day after.
+
+![Seasonal naive copies Christmas Day's lower load into Dec 26, and AutoETS is high on Christmas Day and low the day after](../examples/figures/held-out-week-forecasts.svg "The held-out week's actual load, with the seasonal naive and AutoETS forecasts for each hour")
+
+[Example: figure-held-out-week-forecasts](../examples/figure-held-out-week-forecasts.py)
+
+The load averages {{out:figure-held-out-week-forecasts:mean load on Dec 25, kWh}} kWh an hour on Christmas Day and {{out:figure-held-out-week-forecasts:mean load on Dec 26, kWh}} the day after. The line with dots is AutoETS, and it goes the other way: it expects {{out:figure-held-out-week-forecasts:AutoETS mean on Dec 25, kWh}} kWh on Christmas Day, above the load, and {{out:figure-held-out-week-forecasts:AutoETS mean on Dec 26, kWh}} the day after, below it.
+
 A gap of this size on one client over one week is not a verdict. Seven forecasts make a small sample, and a ranking built on one week can flip on the next. Chapter 3 backtests seasonal naive over a year of Sunday cutoffs.
 
 The score also has to match the decision, and the purchase is lopsided: as [the case](#the-case-and-its-data) says, buying too little costs more than buying too much. MAE and RMSE treat a miss in either direction alike, because they use the size of each miss and not its sign. That is enough for this chapter, which asks whether a forecast is close. It is not enough for the purchase. Chapter 8 builds ranges for that decision, and scores them against what happened.

@@ -50,6 +50,14 @@ The supplier's demand follows the day. The hour of day repeats what the lags alr
 
 A public holiday does not follow the weekday. A model with only weekday features reads Dec 25, 2014 as an ordinary Thursday, and it reads a holiday on a Sunday as an ordinary Sunday. The holiday feature answers this. It is a function of the timestamp, `is_holiday` in the shared module `examples/lib/features.py`, which returns 1 on a Portuguese national holiday and 0 otherwise. mlforecast accepts such a function as a date feature and names its column after the function. The holidays come from the `holidays` package {{version:holidays}}, under the MIT licence, through `holidays.country_holidays("PT", years=[2013, 2014])`. For the two years in the data, the package lists {{out:lgbm-feature-sets:Portuguese holidays in 2013 and 2014}} dates. The book does not ship that list. Each run builds it from the package's calendar.
 
+{{fig:holiday-like-sunday}} draws the lead client's Dec 25, 2014 hour by hour, beside the average Thursday and the average Sunday of the eight weeks before it. Each average leaves holidays out, and each is the mean load at every hour of the day. Read the dashed Sunday line and the solid Thursday line first, then the heavy line for Dec 25, which spends the day close to the Sunday and well below the Thursday from the morning on.
+
+![On Dec 25, 2014 the lead client's load tracks the average Sunday more closely than the average Thursday, staying well below the Thursday from the morning on](../examples/figures/holiday-like-sunday.svg "The lead client's Dec 25, 2014 beside the average Thursday and the average Sunday")
+
+[Example: figure-holiday-like-sunday](../examples/figure-holiday-like-sunday.py)
+
+Dec 25 sits nearer the average Sunday. On average, hour by hour, it is {{out:figure-holiday-like-sunday:mean absolute difference from the average Sunday, kWh}} kWh from the average Sunday, against {{out:figure-holiday-like-sunday:mean absolute difference from the average Thursday, kWh}} kWh from the average Thursday. So a weekday feature alone would give the model the wrong kind of day.
+
 The standard cutoffs are Dec 29 to Dec 31, 2014, and none of their 72 hours per client is a holiday. The held-out week's Dec 25 is outside them, so the feature's effect on that day is not scored in this chapter. On the standard cutoffs, it reaches the scores only through the training history, which contains the holidays of Dec 8 and Dec 25, 2014.
 
 The holiday list is a fact known in advance, like the weekday. It comes from a published calendar and not from the readings, so it cannot leak a reading from the target day. Calendar features answer the question in the [working rule](#turn-history-into-features) at every target hour, by construction, and a lag passes only when it is at least as long as the horizon.
@@ -107,6 +115,14 @@ Which do you expect to have the lower error, the model with a lag of 1 or the on
 Only the lag of 1 fails the shift test. Of the {{out:lag-leak-check:rows compared}} target hours compared, {{out:lag-leak-check:rows differing for lag 1}} read a different value from the cut history than from the whole series: every hour of each window but the first. The lags of 24 and 168 differ on {{out:lag-leak-check:rows differing for lag 24}} and {{out:lag-leak-check:rows differing for lag 168}} rows. The lag of 1 agrees only on the first hour of each window, because that hour reads the last reading before the cutoff, which the forecast does have.
 
 The leaky model looks almost twice as good: its MAE is {{out:lag-leak-check:MAE leaky, lags 1, 24 and 168}} kWh, against {{out:lag-leak-check:MAE honest, lags 24 and 168}} kWh for the honest model. The gap is the leak. Its lag of 1 reads the hour before the target, which for most target hours is an hour of the forecast window itself. The honest model never sees that hour, so its error is the one that production will show.
+
+{{fig:leaky-lag-forecast}} draws the lead client's actual load over the same three cutoffs, beside the forecast from the honest lags and the forecast from the leaky set, each made as the example makes them. The solid dark line is the actual load, the dashed line the honest forecast, and the heavy line the leaky one. Compare how each forecast follows the actual line's rises and falls.
+
+![Over the three standard cutoffs, the forecast with a lag of 1 follows the actual load's rises and falls more closely than the honest forecast does](../examples/figures/leaky-lag-forecast.svg "The actual load and the two forecasts over the three standard cutoffs")
+
+[Example: figure-leaky-lag-forecast](../examples/figure-leaky-lag-forecast.py)
+
+The picture is a judgement, so the example measures it. Over the 72 hours, the leaky forecast's correlation with the actual load is {{out:figure-leaky-lag-forecast:correlation of the leaky forecast with the actuals}}, and the honest forecast's is {{out:figure-leaky-lag-forecast:correlation of the honest forecast with the actuals}}. Their mean absolute errors are the two the example prints, {{out:figure-leaky-lag-forecast:MAE leaky, lags 1, 24 and 168}} kWh and {{out:figure-leaky-lag-forecast:MAE honest, lags 24 and 168}} kWh.
 
 **Working rule:** Run the shift test on every lag and every window feature before a model trains on it, and treat any differing row as a leak until you have shown otherwise. When an error falls sharply after you add a feature, check that feature first, before you credit it.
 

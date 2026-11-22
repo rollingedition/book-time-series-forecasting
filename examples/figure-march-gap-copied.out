@@ -1,0 +1,7 @@
+client: MT_014
+gap hour reading, kWh: 0.00
+reading the hour after the gap, kWh: 0.00
+next-day forecast at 1am, no rule, kWh: 0.00
+next-day forecast at 1am, with the rule, kWh: 19.46
+actual at next-day 1am, kWh: 34.30
+figure: figures/march-gap-copied.svg
