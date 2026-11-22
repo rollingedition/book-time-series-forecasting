@@ -446,7 +446,7 @@ wikidata = "Q2566298"
 id = "differencing"
 term = "differencing"
 context = "time-series-forecasting"
-definition = "differencing: subtracting a reading from the reading one season earlier"
+definition = "differencing: subtracting an earlier reading from each reading, the one immediately before it or the one a season earlier"
 section = "fit-a-fixed-seasonal-arima"
 
 [concepts.relations]

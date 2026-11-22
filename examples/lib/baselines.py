@@ -39,7 +39,7 @@ def average_of_weeks(df, cutoffs, weeks=WEEKS, h=HORIZON):
         hist = history_before(df, c)
         series = hist.set_index("ds")["y"]
         targets = pd.date_range(c, periods=h, freq="h")
-        lagged = [series.loc[targets - pd.Timedelta(weeks=w)].to_numpy() for w in range(1, weeks + 1)]
+        lagged = [series.loc[targets - pd.Timedelta(w, unit="W")].to_numpy() for w in range(1, weeks + 1)]
         parts.append(pd.DataFrame({"unique_id": hist["unique_id"].iloc[0], "ds": targets,
                                    "AverageOfWeeks": sum(lagged) / weeks}))
     return pd.concat(parts, ignore_index=True)
@@ -72,7 +72,7 @@ def check_hourly(df):
     """
     for uid, part in df.sort_values(["unique_id", "ds"]).groupby("unique_id"):
         steps = part["ds"].diff().dropna()
-        if not (steps == pd.Timedelta(hours=1)).all():
+        if not (steps == pd.Timedelta(1, unit="h")).all():
             raise ValueError(f"{uid}: readings are not one unbroken hourly series")
 
 

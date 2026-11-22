@@ -195,7 +195,7 @@ def builtin_intervals(df, cutoffs):
     The calibration for each cutoff is the three cutoffs before it (mlforecast's rule). Returns the cross-validation
     frame: the forecast, the reading and the bounds at 80 and 95, as mlforecast names them."""
     cut = pd.DatetimeIndex(cutoffs)
-    d = df[(df["ds"] >= CLEAN_FROM) & (df["ds"] < cut[-1] + pd.Timedelta(hours=HORIZON))]
+    d = df[(df["ds"] >= CLEAN_FROM) & (df["ds"] < cut[-1] + pd.Timedelta(HORIZON, unit="h"))]
     d = d.assign(client=pd.Categorical(d["unique_id"], categories=ALL30))
     pi = PredictionIntervals(n_windows=3, h=HORIZON, method="conformal_distribution")
     return make_forecaster(LAGS, (), scaled=True).cross_validation(

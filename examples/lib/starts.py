@@ -66,7 +66,7 @@ def history_from_start(df, cutoff, hours=HISTORY_HOURS, min_hours=48):
     cutoff = pd.Timestamp(cutoff)
     before = df[df["ds"] < cutoff]
     firsts = first_reading(before)
-    window = before[before["ds"] >= cutoff - pd.Timedelta(hours=hours)]
+    window = before[before["ds"] >= cutoff - pd.Timedelta(hours, unit="h")]
     hist = window[window["ds"] >= window["unique_id"].map(firsts)]
     counts = hist.groupby("unique_id").size()
     short = counts[counts < min_hours]

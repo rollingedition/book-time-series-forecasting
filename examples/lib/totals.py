@@ -154,7 +154,7 @@ def top_down_windows(raw, cutoffs, direct):
     that window's cutoff. Returns unique_id, ds and top-down. `direct` holds the total's forecasts (direct_windows)."""
     parts = []
     for c in pd.to_datetime(cutoffs):
-        win = direct[(direct["ds"] >= c) & (direct["ds"] < c + pd.Timedelta(hours=HORIZON))]
+        win = direct[(direct["ds"] >= c) & (direct["ds"] < c + pd.Timedelta(HORIZON, unit="h"))]
         share = shares(raw, c).rename("share").reset_index()
         part = win[["ds", "direct"]].merge(share, how="cross")
         part["top-down"] = part["direct"] * part["share"]
@@ -206,7 +206,7 @@ def oracle_split_mae(raw, cutoffs):
     act = actual_hours(mask_clock_changes(raw)[["unique_id", "ds", "y"]], cutoffs)
     parts = []
     for c in pd.to_datetime(cutoffs):
-        win = act[(act["ds"] >= c) & (act["ds"] < c + pd.Timedelta(hours=HORIZON))].copy()
+        win = act[(act["ds"] >= c) & (act["ds"] < c + pd.Timedelta(HORIZON, unit="h"))].copy()
         win["split"] = win["ds"].map(total) * win["unique_id"].map(shares(raw, c))
         parts.append(win)
     both = pd.concat(parts)

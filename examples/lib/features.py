@@ -59,7 +59,7 @@ def lag_values(y, k, index):
 
     A reading missing from y, or an hour before y's first reading, is NaN.
     """
-    return y.reindex(index - pd.Timedelta(hours=k)).to_numpy(dtype=float)
+    return y.reindex(index - pd.Timedelta(k, unit="h")).to_numpy(dtype=float)
 
 
 def lag_table(y, lags, index):
@@ -74,7 +74,7 @@ def rows_reading_missing(y, lags):
     missing = y.isna().astype(float)
     hit = np.zeros(len(y), dtype=bool)
     for k in lags:
-        hit |= missing.reindex(y.index - pd.Timedelta(hours=k)).to_numpy(dtype=float) == 1.0
+        hit |= missing.reindex(y.index - pd.Timedelta(k, unit="h")).to_numpy(dtype=float) == 1.0
     return int(hit.sum())
 
 
@@ -115,7 +115,7 @@ def fit_window_mae(y, lags, cutoffs, leaky, h=HORIZON):
     """
     errors = []
     for c in pd.DatetimeIndex(cutoffs):
-        hist = pd.date_range(c - pd.Timedelta(hours=HISTORY_HOURS), c - pd.Timedelta(hours=1), freq="h")
+        hist = pd.date_range(c - pd.Timedelta(HISTORY_HOURS, unit="h"), c - pd.Timedelta(1, unit="h"), freq="h")
         targets = pd.date_range(c, periods=h, freq="h")
         train = lag_table(y, lags, hist)
         train["y"] = y.reindex(hist).to_numpy()
