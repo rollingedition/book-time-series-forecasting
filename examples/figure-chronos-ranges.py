@@ -31,9 +31,9 @@ for i, (_, d) in enumerate(lead.groupby(day)):                  # one segment pe
                     label="95% range" if first else None)       # lighter: the wider band
     ax.fill_between(d["ds"], d["q10"], d["q90"], color=MUTED, alpha=0.35, linewidth=0,
                     label="80% range" if first else None)
-    ax.plot(d["ds"], d["Chronos"], color=ACCENT, linewidth=1.6, linestyle="--",
+    ax.plot(d["ds"], d["Chronos"], color=INK, linewidth=1.6, linestyle="--",
             label="Chronos-2 median" if first else None)        # dashed, so it differs from the load by more than colour
-    ax.plot(d["ds"], d["y"], color=INK, linewidth=1.2, linestyle="-",   # solid: the style cycle would dash later segments
+    ax.plot(d["ds"], d["y"], color=ACCENT, linewidth=1.2, linestyle="-",   # solid: the style cycle would dash later segments
             label="actual load" if first else None)
 ax.set_ylabel("kWh in the hour")
 ax.set_ylim(bottom=0)

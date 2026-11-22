@@ -292,7 +292,7 @@ z
    <g id="line2d_27">
     <path d="M 30.363521 166.039798 
 L 457.79976 166.039798 
-" clip-path="url(#pccbb745c51)" style="fill: none; stroke-dasharray: 4.44,1.92; stroke-dashoffset: 0; stroke: #61574a; stroke-width: 1.2"/>
+" clip-path="url(#pccbb745c51)" style="fill: none; stroke-dasharray: 3.7,1.6; stroke-dashoffset: 0; stroke: #1b1712"/>
    </g>
    <g id="patch_3">
     <path d="M 30.363521 210.39976 
@@ -334,7 +334,7 @@ L 29 28.099219
     <path d="M 9 43.1 
 L 19 43.1 
 L 29 43.1 
-" style="fill: none; stroke-dasharray: 4.44,1.92; stroke-dashoffset: 0; stroke: #61574a; stroke-width: 1.2"/>
+" style="fill: none; stroke-dasharray: 3.7,1.6; stroke-dashoffset: 0; stroke: #1b1712"/>
    </g>
    <g id="text_16">
     <text style="font-size: 10px; font-family: 'IBM Plex Sans', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #1b1712" x="37" y="46.6" transform="rotate(-0 37 46.6)">flag line, twice the reference</text>

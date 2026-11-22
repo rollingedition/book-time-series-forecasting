@@ -116,7 +116,7 @@ AutoETS's errors are higher than the baseline's on both scores, as the table sho
 
 Both models do worst around Christmas, but on different days. The daily lines show where: the baseline's worst day is Dec 26, the day after Christmas, when it copies Christmas Day, at {{out:seasonal-naive-next-day:MAE 2014-12-26}} kWh an hour, the largest of the 7. AutoETS's worst day is Dec 25 itself, at {{out:autoets-next-day:MAE 2014-12-25}} kWh, against {{out:seasonal-naive-next-day:MAE 2014-12-25}} for the baseline.
 
-{{fig:held-out-week-forecasts}} draws the held-out week's load with both forecasts, and the two days at Christmas are where to look. The thick line is the actual load. The dashed seasonal naive line repeats Christmas Day's readings on Dec 26, hour by hour, so it carries the holiday's low level into the day after.
+{{fig:held-out-week-forecasts}} draws the lead client's load over the held-out week with both forecasts, and the two days at Christmas are where to look. The thick line is the actual load. The dashed seasonal naive line repeats Christmas Day's readings on Dec 26, hour by hour, so it carries the holiday's low level into the day after.
 
 ![Seasonal naive copies Christmas Day's lower load into Dec 26, and AutoETS is high on Christmas Day and low the day after](../examples/figures/held-out-week-forecasts.svg "The held-out week's actual load, with the seasonal naive and AutoETS forecasts for each hour")
 

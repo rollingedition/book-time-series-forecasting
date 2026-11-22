@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 
 from lib.electricity import load
-from lib.figures import ACCENT, INK, MUTED, new_figure, save
+from lib.figures import ACCENT, INK, new_figure, save
 from lib.panel import ALL30
 from lib.running import (CAL_DAYS, FLAG_FACTOR, HELD_OUT_DAYS, daily_mase, flagged, prepare, run_days, scale_from,
                          with_actuals)
@@ -36,7 +36,7 @@ fig, ax = new_figure(height=3.2)
 ax.plot(recorded.index, recorded.values, color=INK, marker="o", markersize=3, label="as recorded")
 ax.plot(tested.index, tested.values, color=ACCENT, marker="s", markersize=6, markerfacecolor="none",
         label="after the stated test: readings from Dec 27 at 60%")    # hollow squares, so a dot under them shows
-ax.axhline(line, color=MUTED, linestyle="--", linewidth=1.2, label="flag line, twice the reference")
+ax.axhline(line, color=INK, linestyle="--", linewidth=1.0, label="flag line, twice the reference")
 ax.set_ylabel("daily MASE")
 ax.set_ylim(bottom=0)
 ax.xaxis.set_major_formatter(mdates.DateFormatter("%b %-d"))
