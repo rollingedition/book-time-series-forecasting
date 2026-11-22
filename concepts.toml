@@ -189,7 +189,7 @@ example = "naive-baselines-held-out-week"
 id = "history"
 term = "history"
 context = "time-series-forecasting"
-definition = "the history is every reading before the cutoff"
+definition = "the history is every reading before the cutoff, all that a forecast may use, though the book's models fit on its last eight weeks"
 section = "why-a-baseline-comes-first"
 example = "naive-baselines-held-out-week"
 
@@ -383,7 +383,7 @@ part-of = ["ets"]
 id = "statistical-model"
 term = "statistical model"
 context = "time-series-forecasting"
-definition = "A statistical model holds an estimate of each part of the state of a series, updates the estimates as each reading arrives, and projects them over the horizon."
+definition = "A statistical model describes how each reading follows from the state of a series or from earlier readings, estimates that from the history, and projects it over the horizon."
 section = "why-a-statistical-model-comes-next"
 example = "autoets-subset-backtest"
 
@@ -1015,7 +1015,7 @@ contrasts-with = ["time-series-forecasting/forecast-log", "model-evaluation/flag
 id = "poisoning-check"
 term = "poisoning check"
 context = "model-evaluation"
-definition = "The poisoning check writes wrong values over every reading after a cutoff, then confirms that the refit and the forecast at that cutoff do not move."
+definition = "The poisoning check writes wrong values over every reading from a cutoff on, then confirms that the shares, the total's MASE scale and the start-rule history do not move."
 section = "what-goes-wrong-ch10"
 
 [retired]
