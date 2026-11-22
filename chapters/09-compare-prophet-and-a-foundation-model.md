@@ -90,12 +90,6 @@ Two examples score the recordings, one for each model, on the same thirty client
 
 [Example: recorded-chronos2-score](../examples/recorded-chronos2-score.py)
 
-![The lead client's actual load stays inside the shaded 95% range on almost every hour](../examples/figures/chronos-ranges.svg "The lead client's load, its Chronos-2 median and ranges")
-
-[Example: figure-chronos-ranges](../examples/figure-chronos-ranges.py)
-
-{{fig:chronos-ranges}} draws the lead's {{out:figure-chronos-ranges:hours scored}} scored hours. Its 80% range holds {{out:figure-chronos-ranges:readings inside the 80% range}} of the readings and its 95% range holds {{out:figure-chronos-ranges:readings inside the 95% range}}, and the median is {{out:figure-chronos-ranges:MAE, lead Chronos median, kWh}} kWh from the load on average. The 0.025 and 0.975 quantiles that bound the 95% range are interpolated by the package, and these readings are the ones the caveat below covers.
-
 [Example: recorded-nhits-score](../examples/recorded-nhits-score.py)
 
 | Model | Mean MASE, ALL30 | Mean MASE, SUBSET8 | MAE, ALL30 (kWh) |
@@ -115,6 +109,14 @@ The lead needs its caveat. Chronos-2's pretraining corpus includes this dataset 
 The median is also a check on the quantile arithmetic. The pinball loss at 0.5 is half the absolute error, so the median's loss should be half its MAE. For Chronos-2 the loss at 0.5 is {{out:recorded-chronos2-score:quantile loss 0.5 Chronos}}, against the MAE of {{out:recorded-chronos2-score:MAE Chronos}} kWh divided by two. For NHITS the loss at 0.5 is {{out:recorded-nhits-score:quantile loss 0.5 NHITS}}, against half its MAE of {{out:recorded-nhits-score:MAE NHITS}} kWh.
 
 Chronos-2's 95% range covers {{out:recorded-chronos2-score:coverage 95 Chronos}} of the readings, close to its level, and its 80% range covers {{out:recorded-chronos2-score:coverage 80 Chronos}}, a little under its level of 0.80. The Chronos-2 95% range is partly interpolated, so its score is for the model and the package together.
+
+![The lead client's actual load stays inside the shaded 95% range on almost every hour](../examples/figures/chronos-ranges.svg "The lead client's load, its Chronos-2 median and ranges")
+
+[Example: figure-chronos-ranges](../examples/figure-chronos-ranges.py)
+
+{{fig:chronos-ranges}} shows the lead client's actual load staying inside the shaded 95% range on almost every hour: {{out:figure-chronos-ranges:readings inside the 95% range}} of its {{out:figure-chronos-ranges:hours scored}} scored hours. The 80% range holds {{out:figure-chronos-ranges:readings inside the 80% range}}, and the dashed median is {{out:figure-chronos-ranges:MAE, lead Chronos median, kWh}} kWh from the load on average.
+
+The lead client is one client, and its ranges cover more than the thirty clients' do: {{out:figure-chronos-ranges:coverage 80, lead Chronos}} at 80% against {{out:recorded-chronos2-score:coverage 80 Chronos}}, and {{out:figure-chronos-ranges:coverage 95, lead Chronos}} at 95% against {{out:recorded-chronos2-score:coverage 95 Chronos}}.
 
 Prophet's 95% range has an interval score a little lower than Chronos-2's, {{out:prophet-thirty-clients-backtest:interval score 95 Prophet}} against {{out:recorded-chronos2-score:interval score 95 Chronos}}, but its coverage of {{out:prophet-thirty-clients-backtest:coverage 95 Prophet}} sits further from its level.
 
