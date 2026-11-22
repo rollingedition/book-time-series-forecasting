@@ -31,7 +31,7 @@ show("flagged days, as recorded", " and ".join(f"{day:%b %-d}" for day in flags_
 show("held-out days flagged, after the stated test", len(flags_tested))
 assert len(flags_recorded) == 2 and len(flags_tested) == 7    # the counts drift-flag-rolling and drift-after-a-change print
 
-fig, ax = new_figure(height=2.8)
+fig, ax = new_figure(height=3.2)
 ax.plot(recorded.index, recorded.values, color=INK, marker="o", markersize=3, label="as recorded")
 ax.plot(tested.index, tested.values, color=ACCENT, marker="o", markersize=3,
         label="after the stated test: readings from Dec 27 at 60%")
@@ -39,5 +39,5 @@ ax.axhline(FLAG_FACTOR * reference, color=MUTED, linestyle="--", linewidth=1.2, 
 ax.set_ylabel("daily MASE")
 ax.set_ylim(bottom=0)
 ax.xaxis.set_major_formatter(mdates.DateFormatter("%b %-d"))
-ax.legend(frameon=False, loc="upper right")
+fig.legend(loc="outside upper left", ncols=1, frameon=False, labelcolor=INK)
 save(fig, "drift-flags")
