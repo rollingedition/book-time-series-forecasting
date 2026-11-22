@@ -233,7 +233,7 @@ broader = ["baseline"]
 id = "scaled-error"
 term = "scaled error"
 context = "model-evaluation"
-definition = "A scaled error divides each absolute error by a scale, the typical error of a simple method on the same client's own history."
+definition = "A scaled error divides each error by a scale, the typical error of a simple method on the same client's own history."
 section = "scale-errors-with-mase"
 example = "mase-scale-leak-check"
 
@@ -246,7 +246,7 @@ id = "mase"
 term = "mean absolute scaled error"
 aliases = ["MASE"]
 context = "model-evaluation"
-definition = "MASE, the mean absolute scaled error, is the mean of the scaled errors."
+definition = "MASE, the mean absolute scaled error, is the mean of the absolute scaled errors."
 formula = "MASE = mean of |actual(t) - forecast(t)| / scale"
 section = "scale-errors-with-mase"
 example = "mase-scale-leak-check"
@@ -291,7 +291,7 @@ id = "leakage"
 term = "leakage"
 aliases = ["leak"]
 context = "model-evaluation"
-definition = "A backtest leaks when a window's model sees a reading from the hours it is asked to forecast."
+definition = "A backtest leaks when a window's model sees a reading from at or after its cutoff."
 section = "keep-the-future-out-of-history"
 example = "history-cut-check"
 
@@ -373,7 +373,7 @@ part-of = ["ets"]
 id = "season"
 term = "season"
 context = "time-series-forecasting"
-definition = "the season is the daily shape of the load"
+definition = "the season is the shape that repeats in each cycle, here the daily shape of the load"
 section = "why-a-statistical-model-comes-next"
 
 [concepts.relations]
@@ -464,7 +464,7 @@ wikidata = "Q3354622"
 id = "late-starter"
 term = "late starter"
 context = "time-series-forecasting"
-definition = "A late starter is a client whose first reading falls inside the history its model reads."
+definition = "A late starter is a client whose first reading falls after the data begins, and so can fall inside the history its model reads."
 section = "meet-the-late-starters"
 example = "late-starter-trim"
 
@@ -494,7 +494,7 @@ implemented-by = [{ to = "statsforecast", versions = ">=2.1" }]
 id = "feature-table"
 term = "feature table"
 context = "feature-engineering"
-definition = "A feature table has one row for each hour a model must predict."
+definition = "A feature table has one row for each client and hour that a model learns from or must predict."
 section = "turn-history-into-features"
 example = "lgbm-feature-sets"
 
@@ -597,7 +597,7 @@ contrasts-with = ["mean-per-client-mase"]
 id = "mean-per-client-mase"
 term = "mean per-client MASE"
 context = "model-evaluation"
-definition = "The mean per-client MASE is MASE for each client, averaged over the eight clients."
+definition = "The mean per-client MASE is MASE for each client, averaged over the clients, here the eight clients."
 section = "measure-what-each-feature-adds"
 example = "lgbm-feature-sets"
 
@@ -620,7 +620,7 @@ implemented-by = [{ to = "mlforecast" }]
 id = "recursive-prediction"
 term = "recursive prediction"
 context = "time-series-forecasting"
-definition = "In recursive prediction, for a 24-hour horizon, `MLForecast` forecasts one hour, writes that forecast back as the reading for the next hour, and repeats (`_predict_recursive` in `mlforecast/core.py`)."
+definition = "In recursive prediction, for a 24-hour horizon, `MLForecast` forecasts one hour, writes that forecast back as that hour's reading, and repeats for the next hour (`_predict_recursive` in `mlforecast/core.py`)."
 section = "catch-a-lag-that-leaks"
 applies_to = ["mlforecast"]
 
@@ -723,7 +723,7 @@ contrasts-with = ["bottom-up"]
 id = "share"
 term = "share"
 context = "time-series-forecasting"
-definition = "A client's share is its readings over its own history, the 1,344 hours before the cutoff, divided by the total's readings over the same hours."
+definition = "A client's share is its readings summed over its own history, the 1,344 hours before the cutoff, divided by the total's readings summed over the same hours."
 section = "split-a-total-by-share"
 example = "total-split-by-share"
 
@@ -770,7 +770,7 @@ measured-from = ["prediction-interval"]
 [[concepts]]
 id = "residual"
 term = "residual"
-definition = "A residual is the error of an earlier forecast: the reading minus the forecast, `e = y - f`."
+definition = "Here a residual is the error of an earlier forecast: the reading minus the forecast, `e = y - f`."
 formula = "e = y - f"
 section = "build-intervals-from-residuals"
 example = "conformal-earlier-windows"
@@ -794,18 +794,18 @@ id = "calibration-window"
 term = "calibration window"
 aliases = ["calibration windows"]
 context = "time-series-forecasting"
-definition = "A calibration window is a cutoff whose residuals size the bands."
+definition = "A calibration window is a window whose residuals size the bands."
 section = "build-intervals-from-residuals"
 example = "conformal-earlier-windows"
 
 [concepts.relations]
-broader = ["cutoff"]
+broader = ["window"]
 
 [[concepts]]
 id = "interval-score"
 term = "interval score"
 context = "model-evaluation"
-definition = "The interval score adds a band's width to a penalty for each reading that misses the band, the penalty growing with the distance of the miss and scaled by 2 over the miss rate"
+definition = "The interval score adds a band's width to a penalty for each reading that misses the band, the penalty growing with the distance of the miss and scaled by 2 over the miss rate the level allows"
 section = "calibrate-on-earlier-windows"
 example = "conformal-decision-windows"
 
@@ -871,7 +871,7 @@ wikidata = "Q635384"
 id = "holiday-table"
 term = "holiday table"
 context = "time-series-forecasting"
-definition = "Prophet takes holidays as a table of dates and effects"
+definition = "Prophet takes holidays as a table of names and dates and fits an effect for each"
 section = "where-prophet-fits"
 example = "prophet-holiday-decision"
 applies_to = ["prophet"]
@@ -883,7 +883,7 @@ part-of = ["prophet"]
 id = "foundation-model"
 term = "foundation model"
 context = "time-series-forecasting"
-definition = "A foundation model is trained once on many series and then applied to a context, with no fitting on that series."
+definition = "A foundation model is trained once on many series and then applied to a context, here with no fitting on that series."
 section = "load-a-recorded-foundation-model"
 
 [[concepts]]

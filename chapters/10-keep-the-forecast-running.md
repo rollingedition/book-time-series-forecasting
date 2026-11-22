@@ -113,19 +113,19 @@ Retiring a model means stopping its use and replacing it. A refit is the lighter
 
 The second trigger needs a sense of what ordinary coverage looks like. On the ordinary days, Dec 27 to Dec 31, coverage at 80% stays between {{out:rolling-refit-seven-days:coverage 80 2014-12-31}} and {{out:rolling-refit-seven-days:coverage 80 2014-12-27}}. Dec 29, when the late readings arrive, and Dec 31, New Year's Eve, count as ordinary days here. Dec 25 is lower, at {{out:rolling-refit-seven-days:coverage 80 2014-12-25}}, and Dec 26 is at {{out:rolling-refit-seven-days:coverage 80 2014-12-26}}, for the reason the flags gave. Dec 25 is the holiday, and Dec 26 reads it through lag 24. The bands are a little narrow even on ordinary days, as [Chapter 8](#calibrate-on-earlier-windows) found. So a day between 0.70 and 0.80 is normal here, and a day far below that is not.
 
-To show what the flags and bands do, the chapter stages a change. It is invented for the test, not a fact about the supplier's data. From Dec 27, 2014, every reading of all thirty clients is multiplied by 0.6, as if demand had dropped by 40%. The held-out week then runs on the changed readings, with the same cadence, reference, rule and bands as before. {{fig:drift-flags}} draws the held-out week's daily MASE twice, as recorded and after the stated test, against the flag line of {{out:figure-drift-flags:flag line, MASE}}, twice the reference of {{out:figure-drift-flags:reference, median daily MASE}}.
+To show what the flags and bands do, the chapter stages a change. It is invented for the test, not a fact about the supplier's data. From Dec 27, 2014, every reading of all thirty clients is multiplied by 0.6, as if demand had dropped by 40%. The held-out week then runs on the changed readings, with the same cadence, reference, rule and bands as before.
 
 [Example: drift-after-a-change](../examples/drift-after-a-change.py)
-
-![As recorded, only Dec 25 and Dec 26 cross the flag line; after the stated test, the line crosses on every held-out day](../examples/figures/drift-flags.svg "The daily MASE of the held-out week, as recorded and after the stated test")
-
-[Example: figure-drift-flags](../examples/figure-drift-flags.py)
-
-In the figure, the recorded line is over the flag line on {{out:figure-drift-flags:flagged days, as recorded}} and on no other held-out day. After the stated test, the line is over it on {{out:figure-drift-flags:held-out days flagged, after the stated test}} of the held-out days.
 
 All {{out:drift-after-a-change:held-out days flagged}} held-out days are flagged. Dec 25 and Dec 26 are flagged for Christmas and its echo, as before, and each day from Dec 27, the first changed day, is flagged too. On Dec 27 the daily MASE is {{out:drift-after-a-change:MASE 2014-12-27}}, and coverage falls to {{out:drift-after-a-change:coverage 80 2014-12-27}} that day, the lowest of the week.
 
 One scheduled refit did not clear the flags. The refit on Monday, Dec 29, is the only step in this test that refits on changed readings, and it read Dec 27 and Dec 28 at the lower level. Its daily MASE fell by about 40%, from {{out:drift-after-a-change:MASE 2014-12-28}} on Dec 28 to {{out:drift-after-a-change:MASE 2014-12-29}} on Dec 29, but Dec 30 and Dec 31 stayed above the line. Coverage recovered to {{out:drift-after-a-change:coverage 80 2014-12-29}} on Dec 29 and {{out:drift-after-a-change:coverage 80 2014-12-31}} on Dec 31, still far below 80%.
+
+{{fig:drift-flags}} draws the held-out week's daily MASE twice, as recorded and after the stated test, against the flag line of {{out:figure-drift-flags:flag line, MASE}}, twice the reference of {{out:figure-drift-flags:reference, median daily MASE}}. The two lines are the same through Dec 26, before the test starts. From Dec 27 the as-recorded line stays under the flag line, while the after-the-test line stays above it on every day. A holiday's flags lift after a day or two, but a change holds, which is what the first retirement trigger reads.
+
+![As recorded, only Dec 25 and Dec 26 are above the flag line; after the stated test, every held-out day is](../examples/figures/drift-flags.svg "The daily MASE of the held-out week, as recorded and after the stated test")
+
+[Example: figure-drift-flags](../examples/figure-drift-flags.py)
 
 A run of flags like this, with coverage that low, is a case for an early refit, and the book's rule is to refit early. We did not test an early refit on a day of its own, so that rule is a rule of thumb and not a measured result.
 

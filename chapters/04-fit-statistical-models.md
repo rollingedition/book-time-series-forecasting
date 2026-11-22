@@ -20,7 +20,7 @@ The state comes first, since a model needs something to estimate. Exponential sm
 
 [Example: figure-lead-client-fortnight](../examples/figure-lead-client-fortnight.py)
 
-A statistical model adds to that loop. A series has a state. The level of a series is its typical reading, the trend is the slow drift of the level, the season is the daily shape of the load, and what none of these explain is error. A statistical model holds an estimate of each part of the state of a series, updates the estimates as each reading arrives, and projects them over the horizon. Seasonal naive has no such state. It copies yesterday, so it gets a client's level only as well as yesterday did.
+A statistical model adds to that loop. A series has a state. The level of a series is its typical reading, the trend is the slow drift of the level, the season is the shape that repeats in each cycle, here the daily shape of the load, and what none of these explain is error. A statistical model holds an estimate of each part of the state of a series, updates the estimates as each reading arrives, and projects them over the horizon. Seasonal naive has no such state. It copies yesterday, so it gets a client's level only as well as yesterday did.
 
 The level sets the forecast's height, the trend tilts it, and the season shapes it within the day. {{fig:lead-client-fortnight}} shows the season most plainly: the average day peaks at {{out:figure-lead-client-fortnight:highest hour of the average day}} and bottoms out at {{out:figure-lead-client-fortnight:lowest hour of the average day}}, so a level alone would miss the evening rise and the night low.
 
@@ -129,7 +129,7 @@ Three windows are a small sample, as [Chapter 3](#why-one-test-week-misleads) ex
 
 ## Meet the late starters {#meet-the-late-starters}
 
-One client in the subset starts late. `MT_115`'s first non-zero reading is at 00:00 on Jan 14, 2014. Before that, the meter reports zeros, and the data flags those hours `before_first_reading`. Those zeros are not low use. A model that reads them learns a level the client does not have. A late starter is a client whose first reading falls inside the history its model reads. The fix is the start rule: a series begins at its first reading. This matters for the supplier's decision. A level pulled low means buying too little for that client, the costlier of the supplier's two errors.
+One client in the subset starts late. `MT_115`'s first non-zero reading is at 00:00 on Jan 14, 2014. Before that, the meter reports zeros, and the data flags those hours `before_first_reading`. Those zeros are not low use. A model that reads them learns a level the client does not have. A late starter is a client whose first reading falls after the data begins, and so can fall inside the history its model reads. The fix is the start rule: a series begins at its first reading. This matters for the supplier's decision. A level pulled low means buying too little for that client, the costlier of the supplier's two errors.
 
 At the December cutoffs the eight weeks before each one are all readings, so this section uses February cutoffs: Feb 1, 2014, Feb 15, 2014 and Feb 28, 2014. Their eight-week histories still reach back before the first reading, so the case is in them. [Chapter 6](#forecast-many-clients-at-once) applies the same rule to all thirty clients.
 

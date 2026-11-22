@@ -1,6 +1,3 @@
 reference, median daily MASE: 0.72
 flag line, MASE: 1.43
-held-out days flagged, as recorded: 2
-flagged days, as recorded: Dec 25 and Dec 26
-held-out days flagged, after the stated test: 7
 figure: figures/drift-flags.svg

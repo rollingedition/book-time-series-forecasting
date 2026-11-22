@@ -84,7 +84,7 @@ The identifier is where the two window sets disagree. On the decision windows, t
 
 ## Split a total by share {#split-a-total-by-share}
 
-The top-down split starts from the [direct total](#forecast-the-total-directly) and gives each client a share of it. A client's share is its readings over its own history, the 1,344 hours before the cutoff, divided by the total's readings over the same hours. Each client's top-down forecast for an hour is the direct total's forecast for that hour, times its share. A client that supplied a tenth of the total over the past 8 weeks is expected to take a tenth of the total the next day.
+The top-down split starts from the [direct total](#forecast-the-total-directly) and gives each client a share of it. A client's share is its readings summed over its own history, the 1,344 hours before the cutoff, divided by the total's readings summed over the same hours. Each client's top-down forecast for an hour is the direct total's forecast for that hour, times its share. A client that supplied a tenth of the total over the past 8 weeks is expected to take a tenth of the total the next day.
 
 The eight weeks are a choice, not a tuned value. They are the history every other model in this chapter reads, so the split uses the same memory as the clients. A shorter window would follow a change in a client's share sooner, and it would be noisier. This chapter does not measure that trade-off. A supplier that wants it should test it on the decision windows.
 
