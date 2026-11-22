@@ -1,10 +1,3 @@
-hours in the eight weeks before: 1344
-holiday days left out of the averages: 1
-Thursdays averaged: 8
-Sundays averaged: 8
-mean load on Dec 25, kWh: 38.40
-mean load of the average Thursday, kWh: 57.72
-mean load of the average Sunday, kWh: 39.11
 mean absolute difference from the average Thursday, kWh: 20.77
 mean absolute difference from the average Sunday, kWh: 4.89
 figure: figures/holiday-like-sunday.svg
