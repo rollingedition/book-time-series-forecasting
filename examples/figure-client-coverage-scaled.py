@@ -18,12 +18,13 @@ scale = seasonal_scale(book_scale(raw, DECISION_CAL[0]))        # each client's 
 
 fig, ax = new_figure(height=2.8)
 ranks = np.arange(1, 31)                                        # one point per client, from the lowest coverage to the highest
+# scale None pools the raw kWh residuals; otherwise each client's residuals are divided by its scale first
 for name, s, color, marker in (("unscaled residuals", None, MUTED, "o"), ("scaled residuals", scale, ACCENT, "s")):
     lo, hi = bounds(sc, cal, 80, scale=s)
     inside = ((sc["y"] >= lo) & (sc["y"] <= hi)).groupby(sc["unique_id"]).mean()   # each client's share of its hours in the band
     cov = np.sort(inside.to_numpy())
     show(f"{name}, lowest client coverage at 80", cov[0], 3)
-    show(f"{name}, clients within 0.1 of 0.8", int(np.sum(np.abs(cov - 0.8) <= 0.1)), 0)
+    show(f"{name}, clients within 0.1 of 0.8", int(np.sum(np.abs(cov - 0.8) <= 0.1)), 0)  # a tolerance chosen for this figure, not a judging measure
     if s is None:
         assert round(cov[0], 3) == 0.021                        # the lowest client, as conformal-decision-windows prints it
     else:

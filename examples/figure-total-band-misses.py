@@ -1,4 +1,4 @@
-"""The total's 72 scored hours with its 80% band and the actual total, and below them a bar for each hour outside the band.
+"""The total's 72 scored hours with its 80% band, the actual total, and each hour outside the band marked.
 The missed hours and the longest run of them in a row are printed; the run is the line to read."""
 import matplotlib.dates as mdates
 import numpy as np
@@ -28,16 +28,13 @@ show("longest run of missed hours", longest, 0)
 show("longest run starts", f"{pd.Timestamp(hours[run_start]):%b %-d, %H:00}")
 assert int(missed.sum()) == 24 and longest == 8                  # the same hours as total-band-miss-runs
 
-fig, (ax, ax2) = new_figure(rows=2, height=4.2)
+fig, ax = new_figure(height=2.8)
 ax.fill_between(hours, lo.to_numpy(), hi.to_numpy(), color=MUTED, alpha=0.25, linewidth=0, label="80% band")
 ax.plot(hours, sc["y"].to_numpy(), color=INK, linewidth=1.2, label="actual total")
 ax.plot(hours[missed], sc["y"].to_numpy()[missed], color=ACCENT, linestyle="none", marker="o", markersize=4,
         label="missed hour")
 ax.set_ylabel("kWh in the hour")
-ax2.bar(hours, missed.astype(int), width=1 / 24, color=ACCENT)  # one bar per hour, one day is 1 wide
-ax2.set_yticks([0, 1], ["inside", "missed"])
-ax2.set_ylim(0, 1.2)
-ax2.xaxis.set_major_locator(mdates.DayLocator())               # a tick at each midnight, so no day is labelled twice
-ax2.xaxis.set_major_formatter(mdates.DateFormatter("%b %-d"))
+ax.xaxis.set_major_locator(mdates.DayLocator())               # a tick at each midnight, so no day is labelled twice
+ax.xaxis.set_major_formatter(mdates.DateFormatter("%b %-d"))
 fig.legend(loc="outside upper left", ncols=3, frameon=False, labelcolor=INK)
 save(fig, "total-band-misses")

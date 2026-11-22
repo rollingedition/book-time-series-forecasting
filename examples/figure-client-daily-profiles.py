@@ -36,14 +36,14 @@ show("median gap across the thirty clients", gap.median())
 show("mean absolute difference from the total's day, largest client", gap[largest], digits=3)
 show("peak hour of the total's average day", f"{total_day.idxmax():02d}:00")
 show("peak hour of the typical client's average day", f"{peak[typical]:02d}:00")
-show("mean of the total's average day from 00:00 to 05:00, over its mean", total_day.loc[:5].mean())
+for name, day in (("the total's", total_day), ("the largest client's", days.loc[largest]), ("the typical client's", days.loc[typical])):
+    show(f"night mean of {name} average day, hours 0 to 5, over its mean", day.loc[:5].mean())   # midnight to 05:00
 
 fig, ax = new_figure(height=2.8)
 ax.plot(total_day.index, total_day.values, color=INK, label="total of the thirty clients")
 ax.plot(days.columns, days.loc[largest].values, color=MUTED, linestyle="--", label=f"largest client, {largest}")
 ax.plot(days.columns, days.loc[typical].values, color=ACCENT, linewidth=2.0, label=f"typical client, {typical}")
-ax.set_xlabel("hour of the day")
-ax.set_ylabel("load over its daily mean")
+ax.set(xlabel="hour of the day", ylabel="load over its daily mean")
 ax.set_xticks(range(0, 24, 3))
 ax.set_ylim(bottom=0)
 fig.legend(loc="outside upper left", ncols=1, frameon=False, labelcolor=INK)

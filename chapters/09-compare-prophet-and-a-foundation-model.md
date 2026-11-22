@@ -90,6 +90,12 @@ Two examples score the recordings, one for each model, on the same thirty client
 
 [Example: recorded-chronos2-score](../examples/recorded-chronos2-score.py)
 
+![The lead client's actual load stays inside the shaded 95% range on almost every hour](../examples/figures/chronos-ranges.svg "The lead client's load, its Chronos-2 median and ranges")
+
+[Example: figure-chronos-ranges](../examples/figure-chronos-ranges.py)
+
+{{fig:chronos-ranges}} draws the lead's {{out:figure-chronos-ranges:hours scored}} scored hours. Its 80% range holds {{out:figure-chronos-ranges:readings inside the 80% range}} of the readings and its 95% range holds {{out:figure-chronos-ranges:readings inside the 95% range}}, and the median is {{out:figure-chronos-ranges:MAE, lead Chronos median, kWh}} kWh from the load on average. The 0.025 and 0.975 quantiles that bound the 95% range are interpolated by the package, and these readings are the ones the caveat below covers.
+
 [Example: recorded-nhits-score](../examples/recorded-nhits-score.py)
 
 | Model | Mean MASE, ALL30 | Mean MASE, SUBSET8 | MAE, ALL30 (kWh) |
