@@ -1,0 +1,4 @@
+clients scored: 30
+clients where global beats seasonal naive: 23
+clients where seasonal naive wins: MT_001, MT_128, MT_141, MT_179, MT_217, MT_268, MT_294
+figure: figures/client-mase-global-vs-naive.svg

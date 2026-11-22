@@ -76,6 +76,12 @@ At the standard cutoffs the rule matters less than the late starters might sugge
 
 The February cutoffs, which Chapter 4 used for `MT_115`, are where the zeros enter the history. `MT_115`'s history is {{out:global-model-raw-starts:zero share of history MT_115, 2014-02-01}} percent zeros on Feb 1, 2014, {{out:global-model-raw-starts:zero share of history MT_115, 2014-02-15}} percent on Feb 15 and {{out:global-model-raw-starts:zero share of history MT_115, 2014-02-28}} percent on Feb 28. `MT_179`'s history is {{out:global-model-raw-starts:zero share of history MT_179, 2014-02-01}} percent zeros on Feb 1 and none after.
 
+{{fig:late-starter-history}} draws `MT_115`'s eight weeks before Feb 1, 2014. The meter reads zero until its first reading on {{out:figure-late-starter-history:first reading MT_115}}. The start rule removes the {{out:figure-late-starter-history:rows before the first reading, all zero}} zero rows before it and keeps {{out:figure-late-starter-history:rows the start rule keeps}} rows, of which {{out:figure-late-starter-history:zeros the start rule keeps}} are zero.
+
+![Before its first reading MT_115 reads only zeros, and the start rule drops them and keeps the readings from there on](../examples/figures/late-starter-history.svg "MT_115's history before Feb 1, 2014, and the rows the start rule keeps")
+
+[Example: figure-late-starter-history](../examples/figure-late-starter-history.py)
+
 Here the forecasts change, because one model learns from all thirty clients at once: {{out:global-model-raw-starts:forecast hours that differ, february}} of the {{out:global-model-raw-starts:scored hours, february}} forecast hours in these three windows differ. Both runs are scored on the one book scale, read from Feb 1, 2014, so only the histories differ. The mean MASE is {{out:global-model-raw-starts:mean MASE, start, february}} with the rule and {{out:global-model-raw-starts:mean MASE, raw, february}} without it.
 
 Each late starter's MASE moves very little, and the direction is mixed. `MT_039` scores {{out:global-model-raw-starts:MASE MT_039, start, february}} with the rule and {{out:global-model-raw-starts:MASE MT_039, raw, february}} without it, and `MT_115` scores {{out:global-model-raw-starts:MASE MT_115, start, february}} with the rule and {{out:global-model-raw-starts:MASE MT_115, raw, february}} without.
@@ -109,6 +115,12 @@ The example scores {{out:global-model-thirty-clients:clients scored}} clients on
 The count is only as good as its rule. At a cutoff of Dec 15, 2013, {{out:global-model-thirty-clients:clients with no reading before 2013-12-15, check}} clients have no reading yet, and counting any row before the cutoff would give {{out:global-model-thirty-clients:clients with any row before 2013-12-15, broken count}}, which reports no gap.
 
 One global model beats seasonal naive on these cutoffs, for most clients and in total: its mean per-client MASE is {{out:global-model-thirty-clients:mean MASE global}} against {{out:global-model-thirty-clients:mean MASE SeasonalNaive}}, and it wins for {{out:global-model-thirty-clients:clients where global beats seasonal naive}} of the thirty clients. It loses for {{out:global-model-thirty-clients:clients where seasonal naive wins}}, and those clients are the first place to look when the model is refreshed.
+
+{{fig:client-mase-global-vs-naive}} plots each client's MASE under seasonal naive against its MASE under the global model, on the same three cutoffs. The dashed line is where the two are equal, so a client above it is one where seasonal naive wins, and each such client is labelled.
+
+![Most clients sit below the equal line, where the global model has the lower MASE, and the labelled clients sit above it, where seasonal naive wins](../examples/figures/client-mase-global-vs-naive.svg "Each client's MASE under seasonal naive and under the global model")
+
+[Example: figure-client-mase-global-vs-naive](../examples/figure-client-mase-global-vs-naive.py)
 
 The pooled figures point the same way. The MAE is {{out:global-model-thirty-clients:MAE global}} kWh against {{out:global-model-thirty-clients:MAE SeasonalNaive}} kWh, and the RMSE is {{out:global-model-thirty-clients:RMSE global}} kWh against {{out:global-model-thirty-clients:RMSE SeasonalNaive}}.
 

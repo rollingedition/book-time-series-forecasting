@@ -1,0 +1,7 @@
+rows in the history before 2014-02-01: 1344
+zero share of history MT_115, 2014-02-01: 68
+first reading MT_115: 2014-01-14
+rows before the first reading, all zero: 912
+rows the start rule keeps: 432
+zeros the start rule keeps: 0
+figure: figures/late-starter-history.svg
