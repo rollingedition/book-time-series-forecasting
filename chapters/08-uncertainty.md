@@ -57,7 +57,7 @@ Two choices in this design were made on the decision windows, not on the held-ou
 
 [Example: conformal-decision-windows](../examples/conformal-decision-windows.py)
 
-{{fig:client-coverage-scaled}} sorts each client's coverage at 80 for each variant, unscaled as circles and scaled as squares. This count is a reading of the figure, not one of the two measures the variants were judged by: without the scale, {{out:figure-client-coverage-scaled:unscaled residuals, clients within 0.1 of 0.8}} of the thirty clients sit within 0.1 of the 0.8 target, and with it, {{out:figure-client-coverage-scaled:scaled residuals, clients within 0.1 of 0.8}} do.
+{{fig:client-coverage-scaled}} sorts each client's coverage at 80, circles unscaled and squares scaled. Counted for this figure only, not as a judging measure, {{out:figure-client-coverage-scaled:unscaled residuals, clients within 0.1 of 0.8}} clients sit within 0.1 of the 0.8 target unscaled, and {{out:figure-client-coverage-scaled:scaled residuals, clients within 0.1 of 0.8}} scaled.
 
 ![With the scale, more clients' coverage at 80 sits near the dashed target line](../examples/figures/client-coverage-scaled.svg "Each client's coverage at 80 on the decision windows, sorted")
 
