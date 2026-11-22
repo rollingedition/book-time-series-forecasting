@@ -90,7 +90,7 @@ def with_and_without_start_rule(df, cutoffs, client_id=False):
     fc = panel_windows(df, cutoffs, start_rule=True, client_id=client_id, name="start").merge(
         panel_windows(df, cutoffs, start_rule=False, client_id=client_id, name="raw"),
         on=["unique_id", "ds"], validate="one_to_one")
-    actual = df[(df["ds"] >= cutoffs[0]) & (df["ds"] < cutoffs[-1] + pd.Timedelta(hours=HORIZON))]
+    actual = df[(df["ds"] >= cutoffs[0]) & (df["ds"] < cutoffs[-1] + pd.Timedelta(HORIZON, unit="h"))]
     return fc.merge(actual, on=["unique_id", "ds"], validate="one_to_one")
 
 
@@ -191,7 +191,7 @@ def start_rule_checks(raw, cutoffs, history_fn, removed_rows=False):
     r = dict(refused=0, expected=0, mismatch=0, accepted=0, missing=0, changed=0, removed=0, removed_nonzero=0)
     for c in cutoffs:
         hist = _outcome(history_fn, df, c)
-        expected = any(c < first_real[uid] + pd.Timedelta(hours=48) for uid in ALL30)
+        expected = any(c < first_real[uid] + pd.Timedelta(48, unit="h") for uid in ALL30)
         r["expected"] += int(expected)
         r["mismatch"] += int((hist is None) != expected)
         changed = False
@@ -221,7 +221,7 @@ def leaky_history(frame, cutoff):
     cutoff = pd.Timestamp(cutoff)
     firsts = first_reading(frame)
     before = frame[frame["ds"] < cutoff]
-    window = before[before["ds"] >= cutoff - pd.Timedelta(hours=HISTORY_HOURS)]
+    window = before[before["ds"] >= cutoff - pd.Timedelta(HISTORY_HOURS, unit="h")]
     hist = window[window["ds"] >= window["unique_id"].map(firsts)]
     counts = hist.groupby("unique_id").size()
     short = counts[counts < 48]

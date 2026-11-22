@@ -26,7 +26,7 @@ def history_before(df, cutoff, hours=HISTORY_HOURS):
     Raises ValueError unless every client has exactly `hours` rows in that range. A missing row would otherwise
     shorten the history silently, and a duplicated row would lengthen it.
     """
-    start = cutoff - pd.Timedelta(hours=hours)
+    start = cutoff - pd.Timedelta(hours, unit="h")
     out = df[(df["ds"] >= start) & (df["ds"] < cutoff)]
     counts = out.groupby("unique_id").size()
     bad = counts[counts != hours]

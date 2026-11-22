@@ -48,7 +48,7 @@ def target_test(y, feature):
     """Target hours compared and target hours that differ, over the HORIZON hours after each evaluation cutoff."""
     compared = differing = 0
     for cutoff in pd.to_datetime(EVAL_CUTOFFS):
-        targets = y.index[(y.index >= cutoff) & (y.index < cutoff + pd.Timedelta(hours=HORIZON))]
+        targets = y.index[(y.index >= cutoff) & (y.index < cutoff + pd.Timedelta(HORIZON, unit="h"))]
         cut = feature(y.where(y.index < cutoff))[targets]
         full = feature(y)[targets]
         compared += len(targets)

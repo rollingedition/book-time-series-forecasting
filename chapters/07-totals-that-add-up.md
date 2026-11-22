@@ -84,11 +84,19 @@ The identifier is where the two window sets disagree. On the decision windows, t
 
 ## Split a total by share {#split-a-total-by-share}
 
-The top-down split starts from the [direct total](#forecast-the-total-directly) and gives each client a share of it. A client's share is its readings over its own history, the 1,344 hours before the cutoff, divided by the total's readings over the same hours. Each client's top-down forecast for an hour is the direct total's forecast for that hour, times its share. A client that supplied a tenth of the total over the past 8 weeks is expected to take a tenth of the total the next day.
+The top-down split starts from the [direct total](#forecast-the-total-directly) and gives each client a share of it. A client's share is its readings summed over its own history, the 1,344 hours before the cutoff, divided by the total's readings summed over the same hours. Each client's top-down forecast for an hour is the direct total's forecast for that hour, times its share. A client that supplied a tenth of the total over the past 8 weeks is expected to take a tenth of the total the next day.
 
 The eight weeks are a choice, not a tuned value. They are the history every other model in this chapter reads, so the split uses the same memory as the clients. A shorter window would follow a change in a client's share sooner, and it would be noisier. This chapter does not measure that trade-off. A supplier that wants it should test it on the decision windows.
 
 The split's weak point is the shape of the day. It gives every client the total's daily profile, so a client that peaks at a different hour gets the wrong profile in every hour, however good the total forecast is. On these clients the split loses even with the true total in hand. A check this chapter calls the oracle check applies the shares to the actual total, which no forecast can know, and its mean per-client MAE is {{out:total-split-by-share:mean per-client MAE with the true total split by share}} kWh. That is a reference, not a method: the error the split would have with a perfect total. The bottom-up forecast, which has to forecast each client, has a mean per-client MAE of {{out:total-split-by-share:mean per-client MAE bottom-up}} kWh.
+
+{{fig:client-daily-profiles}} draws the average day of the total, the largest client and a typical client, each divided by its own daily mean, over the eight weeks before the first standard cutoff. {{out:figure-client-daily-profiles:clients whose average day peaks at a different hour from the total's}} of the thirty peak at another hour from the total's, and the typical client is the middle one of those by gap. The largest client, {{out:total-split-by-share:largest client share of the total, first cutoff}} of the total, differs from the total's day by {{out:figure-client-daily-profiles:mean absolute difference from the total's day, largest client}} on average, against a median of {{out:figure-client-daily-profiles:median gap across the thirty clients}} across the thirty.
+
+![The total's average day dips well below its mean at night, while the largest client and a typical client stay near theirs](../examples/figures/client-daily-profiles.svg "The average day of the total, the largest client and a typical client, each over its own daily mean")
+
+[Example: figure-client-daily-profiles](../examples/figure-client-daily-profiles.py)
+
+At night the shapes part. Averaged over midnight to 05:00, the total's day is {{out:figure-client-daily-profiles:night mean of the total's average day, hours 0 to 5, over its mean}} of its mean, while the largest client's is {{out:figure-client-daily-profiles:night mean of the largest client's average day, hours 0 to 5, over its mean}} of its own and the typical client's {{out:figure-client-daily-profiles:night mean of the typical client's average day, hours 0 to 5, over its mean}}. A split by share hands both clients the total's night dip, which neither of them has.
 
 The shares are also uneven. On the first cutoff, Dec 29, 2014, the largest client's share of the total is {{out:total-split-by-share:largest client share of the total, first cutoff}}.
 

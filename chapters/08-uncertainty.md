@@ -22,14 +22,14 @@ In the case, the range that matters is the total's, because the total is what th
 
 ## Build intervals from residuals {#build-intervals-from-residuals}
 
-A range needs bounds, and the simplest bounds come from past errors. A residual is the error of an earlier forecast: the reading minus the forecast, `e = y - f`. Conformal prediction builds a band from the residuals of forecasts made the same way on earlier days. Take the residuals of a set of calibration windows, group them by horizon step, and read off the quantiles you need. A day-ahead forecast made at 00:00 has one horizon step for each hour of the day, so the group is the hour alone. For a level `L` in percent, the bounds for a forecast `f` made at a given step are:
+A range needs bounds, and the simplest bounds come from past errors. Here a residual is the error of an earlier forecast: the reading minus the forecast, `e = y - f`. Conformal prediction builds a band from the residuals of forecasts made the same way on earlier days. Take the residuals of a set of calibration windows, group them by horizon step, and read off the quantiles you need. A day-ahead forecast made at 00:00 has one horizon step for each hour of the day, so the group is the hour alone. For a level `L` in percent, the bounds for a forecast `f` made at a given step are:
 
 ```text
 lower = f + Q((1 - L/100) / 2)
 upper = f + Q((1 + L/100) / 2)
 ```
 
-where `Q(p)` is the empirical p-quantile of the calibration residuals at that step. The method assumes no model of the errors. It only assumes that the calibration residuals resemble the residuals to come, which [a later section](#calibrate-on-earlier-windows) tests. A calibration window is a cutoff whose residuals size the bands. It always comes before the cutoffs being forecast, and it is never one of the windows that are scored.
+where `Q(p)` is the empirical p-quantile of the calibration residuals at that step. The method assumes no model of the errors. It only assumes that the calibration residuals resemble the residuals to come, which [a later section](#calibrate-on-earlier-windows) tests. A calibration window is a window whose residuals size the bands. It always comes before the cutoffs being forecast, and it is never one of the windows that are scored.
 
 The library that does this for the book's model is mlforecast, at version {{version:mlforecast}}. Its class `PredictionIntervals` takes a number of windows, a horizon and a method, and it has four conformal methods: `conformal_error`, `conformal_distribution`, and their weighted versions. The two unweighted methods score the absolute residuals, `|y - f|`, so their bounds are symmetric around the forecast (mlforecast {{version:mlforecast}}, `mlforecast/conformal_prediction.py`, function `compute_conformity_scores`). The default, `conformal_distribution`, works one client and one horizon step at a time. For each client and step it takes the calibration windows' absolute residuals, makes the paths of the forecast plus and minus each one, and reads the quantiles of those paths. Nothing is pooled across clients. The statistical library, statsforecast at version {{version:statsforecast}}, names its interval class `ConformalIntervals`, not `PredictionIntervals`.
 
@@ -53,9 +53,15 @@ The calibration windows must come before the windows you score, and they must no
 
 Twelve windows with thirty clients give {{out:conformal-earlier-windows:calibration residuals per hour of the day}} residuals for each hour of the day. They come from twelve days, though, and the thirty clients share each day's weather and calendar. So a day-level error is still a sample of twelve. The pooled residuals have a second problem. The clients differ enormously in size. In the scored week the largest client, {{out:conformal-earlier-windows:largest client}}, averages {{out:conformal-earlier-windows:mean hourly load of the largest client}} kWh an hour over the three scored days. Pooled residuals in kWh are dominated by such clients, so the bands fit the large clients and misfit the small ones. The fix is to divide each client's residuals by that client's scale before pooling, and multiply the bound back by the scale of the client being forecast. The scale is the seasonal naive error on the history before the first calibration cutoff, the same kind of scale the book uses for MASE. With the scale, the thirty clients count alike.
 
-Two choices in this design were made on the decision windows, not on the held-out evaluation. The [decision windows](#choose-on-decision-windows) are the four cutoffs from Nov 25 to Dec 3, 2014. Their calibration is Nov 9 to 20, 2014, twelve holiday-free days that end four days before the first decision cutoff, the same shape as the held-out design. The windows are scored on their own, and the held-out evaluation is not read. The choices are judged by the interval score and the lowest client's coverage. The interval score adds a band's width to a penalty for each reading that misses the band, the penalty growing with the distance of the miss and scaled by 2 over the miss rate ([Gneiting and Raftery (2007)](https://sites.stat.washington.edu/raftery/Research/PDF/Gneiting2007jasa.pdf), eq. 43). Those windows settle both choices, as the measurements below show.
+Two choices in this design were made on the decision windows, not on the held-out evaluation. The [decision windows](#choose-on-decision-windows) are the four cutoffs from Nov 25 to Dec 3, 2014. Their calibration is Nov 9 to 20, 2014, twelve holiday-free days that end four days before the first decision cutoff, the same shape as the held-out design. The windows are scored on their own, and the held-out evaluation is not read. The choices are judged by the interval score and the lowest client's coverage. The interval score adds a band's width to a penalty for each reading that misses the band, the penalty growing with the distance of the miss and scaled by 2 over the miss rate the level allows ([Gneiting and Raftery (2007)](https://sites.stat.washington.edu/raftery/Research/PDF/Gneiting2007jasa.pdf), eq. 43). Those windows settle both choices, as the measurements below show.
 
 [Example: conformal-decision-windows](../examples/conformal-decision-windows.py)
+
+{{fig:client-coverage-scaled}} sorts each client's coverage at 80, circles unscaled and squares scaled. Counted for this figure only, not as a judging measure, {{out:figure-client-coverage-scaled:unscaled residuals, clients within 0.1 of 0.8}} clients sit within 0.1 of the 0.8 target unscaled, and {{out:figure-client-coverage-scaled:scaled residuals, clients within 0.1 of 0.8}} scaled.
+
+![With the scale, more clients' coverage at 80 sits near the dashed target line](../examples/figures/client-coverage-scaled.svg "Each client's coverage at 80 on the decision windows, sorted")
+
+[Example: figure-client-coverage-scaled](../examples/figure-client-coverage-scaled.py)
 
 Scaling wins on the two measures the variants were judged by, and loses only on the pooled coverage at 80. The worst-covered client's coverage at 80 rises from {{out:conformal-decision-windows:unscaled, lowest client coverage at 80}} to {{out:conformal-decision-windows:scaled, lowest client coverage at 80}}, and the interval score at 80 falls from {{out:conformal-decision-windows:unscaled, interval score at 80}} to {{out:conformal-decision-windows:scaled, interval score at 80}}. It falls at 95 as well, as the output shows.
 
@@ -106,6 +112,12 @@ Dependence also decides when the misses fall, which a coverage figure cannot sho
 The total's misses come in runs. The longest is {{out:total-band-miss-runs:longest run of missed hours}} hours outside the band in a row. The same hours in shuffled order give a longest run of {{out:total-band-miss-runs:longest run of missed hours, shuffled, mean}} on average, and only {{out:total-band-miss-runs:share of shuffles with a run this long}} of the shuffles reach one that long.
 
 The hour after a miss points the same way, because it missed too in {{out:total-band-miss-runs:misses followed by a miss}} of cases, against {{out:total-band-miss-runs:misses followed by a miss, shuffled, mean}} once the order is broken. So report how misses persist beside the coverage, such as the longest run of missed hours, since a supplier short for several hours in a row pays for all of them before the next day's purchase can respond.
+
+{{fig:total-band-misses}} marks each missed hour; the longest run starts {{out:figure-total-band-misses:longest run starts}}.
+
+![The total's misses cluster in runs, the longest late on the last scored day](../examples/figures/total-band-misses.svg "The total's band at 80, its actual hours, and the hours outside the band")
+
+[Example: figure-total-band-misses](../examples/figure-total-band-misses.py)
 
 So the book promises nothing about coverage that it does not measure. The coverage in this chapter is what three days showed, under the calibration described in [Calibrate on earlier windows](#calibrate-on-earlier-windows).
 

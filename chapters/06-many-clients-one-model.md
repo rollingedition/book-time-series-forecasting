@@ -110,6 +110,14 @@ The count is only as good as its rule. At a cutoff of Dec 15, 2013, {{out:global
 
 One global model beats seasonal naive on these cutoffs, for most clients and in total: its mean per-client MASE is {{out:global-model-thirty-clients:mean MASE global}} against {{out:global-model-thirty-clients:mean MASE SeasonalNaive}}, and it wins for {{out:global-model-thirty-clients:clients where global beats seasonal naive}} of the thirty clients. It loses for {{out:global-model-thirty-clients:clients where seasonal naive wins}}, and those clients are the first place to look when the model is refreshed.
 
+{{fig:client-mase-global-vs-naive}} plots each client's MASE under seasonal naive across the bottom and under the global model up the side, on the same three cutoffs. A client above the dashed equal line is one where seasonal naive wins, and each of those is labelled. Most of seasonal naive's wins are narrow: {{out:figure-client-mase-global-vs-naive:clients where seasonal naive wins by less than that margin}} of its {{out:figure-client-mase-global-vs-naive:clients where seasonal naive has the lower MASE}} are by less than {{out:figure-client-mase-global-vs-naive:margin that counts as narrow, MASE}} MASE.
+
+![Most clients sit below the equal line, where the global model has the lower MASE, and the labelled clients sit above it, where seasonal naive wins](../examples/figures/client-mase-global-vs-naive.svg "Each client's MASE under seasonal naive and under the global model")
+
+[Example: figure-client-mase-global-vs-naive](../examples/figure-client-mase-global-vs-naive.py)
+
+The widest gap is {{out:figure-client-mase-global-vs-naive:largest margin where seasonal naive wins, MASE}} MASE, for {{out:figure-client-mase-global-vs-naive:client with the largest margin}}.
+
 The pooled figures point the same way. The MAE is {{out:global-model-thirty-clients:MAE global}} kWh against {{out:global-model-thirty-clients:MAE SeasonalNaive}} kWh, and the RMSE is {{out:global-model-thirty-clients:RMSE global}} kWh against {{out:global-model-thirty-clients:RMSE SeasonalNaive}}.
 
 The model without the identifier, printed for reference, has a mean MASE of {{out:global-model-thirty-clients:mean MASE plain}} and an MAE of {{out:global-model-thirty-clients:MAE plain}} kWh, which is the trade-off the [identifier section](#identify-each-client) describes.

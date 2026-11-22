@@ -56,7 +56,7 @@ def left_out_facts(raw, df, first_cutoff, check_cutoff="2013-12-15"):
 def actual_hours(df, cutoffs, h=HORIZON):
     """The readings of the hours the windows forecast: from the first cutoff to the last cutoff's h-th hour."""
     cutoffs = pd.DatetimeIndex(cutoffs)
-    return df[(df["ds"] >= cutoffs[0]) & (df["ds"] < cutoffs[-1] + pd.Timedelta(hours=h))]
+    return df[(df["ds"] >= cutoffs[0]) & (df["ds"] < cutoffs[-1] + pd.Timedelta(h, unit="h"))]
 
 
 def score_windows(actual, forecasts, models, scale_rows):

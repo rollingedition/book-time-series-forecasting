@@ -4,15 +4,27 @@ chapter_id: fit-statistical-models-per-client
 
 # Fit a statistical model for each client
 
-Here you fit AutoETS and a fixed seasonal ARIMA for each client over the same backtest, score both against seasonal naive, and learn to start a late-starting client at its first reading. The chapter assumes the baselines and backtests of the two chapters before it.
+Each of the supplier's clients needs its own day-ahead forecast, and [Chapter 2](#beat-the-naive-baselines)'s seasonal naive gives every one of them the same answer: the same hour yesterday. That rule keeps no estimate of a client's level or its trend, and the clients differ in both. The supplier buys for each client, so each forecast has to be right on its own.
 
-Each of the supplier's clients needs its own day-ahead forecast, and [Chapter 2](#beat-the-naive-baselines)'s seasonal naive gives every one of them the same answer: the same hour yesterday. That rule keeps no estimate of a client's level or its trend, and the clients differ in both. So this chapter fits a statistical model for each client, and asks whether the extra work pays.
+The chapter rests on the two before it: [Chapter 2](#beat-the-naive-baselines) sets seasonal naive as the bar, and [Chapter 3](#backtest-without-looking-ahead) tests it over many cutoffs. Take the lead client, `MT_014`. Its forecast for tomorrow has to follow its evening peak and its level, and seasonal naive follows them only a day late, by copying yesterday.
+
+The state comes first, since a model needs something to estimate. Exponential smoothing adds a level, whose flat forecast shows its limit. ETS then adds a season, and a seasonal ARIMA compares each hour with the same hour yesterday. Here you fit AutoETS and a fixed seasonal ARIMA for each client over the same backtest, score both against seasonal naive, and learn to start a late-starting client at its first reading.
 
 ## Why a statistical model comes next {#why-a-statistical-model-comes-next}
 
 [Chapter 2](#beat-the-naive-baselines) set the bar. [Seasonal naive](#forecast-with-seasonal-naive) forecasts each hour as the same hour yesterday, and the scaled error, MASE, compares clients with different loads on one scale. [Chapter 3](#backtest-without-looking-ahead) backtested that forecast over many cutoffs. A [cutoff](#the-case-and-its-data) is the time a forecast is made, and its history ends there. A [window](#the-case-and-its-data) is one cutoff and the 24 hours after it, which is the horizon. Each window's history ends at its cutoff, so no hour is forecast with data from its own day.
 
-A statistical model adds to that loop. A series has a state. The level of a series is its typical reading, the trend is the slow drift of the level, the season is the daily shape of the load, and what none of these explain is error. A statistical model holds an estimate of each part of the state of a series, updates the estimates as each reading arrives, and projects them over the horizon. Seasonal naive has no such state. It copies yesterday, so it gets a client's level only as well as yesterday did.
+{{fig:lead-client-fortnight}} draws the lead client's last two weeks before the first standard cutoff, each hour thin and the 24-hour mean heavy. Within each day the load rises and falls, a similar shape each day. Across the fortnight the 24-hour mean moves more slowly, and it is the line to follow for the level. These two movements are what the loop of Chapter 3 forecasts at every cutoff.
+
+![The load repeats a daily rise and fall, and its 24-hour mean moves more slowly, lowest after Christmas](../examples/figures/lead-client-fortnight.svg "The lead client's load and its 24-hour mean")
+
+[Example: figure-lead-client-fortnight](../examples/figure-lead-client-fortnight.py)
+
+A statistical model adds to that loop. A series has a state. The level of a series is its typical reading, the trend is the slow drift of the level, the season is the shape that repeats in each cycle, here the daily shape of the load, and what none of these explain is error. A statistical model describes how each reading follows from the state of a series or from earlier readings, estimates that from the history, and projects it over the horizon. Seasonal naive has no such state. It copies yesterday, so it gets a client's level only as well as yesterday did.
+
+The level sets the forecast's height, the trend tilts it, and the season shapes it within the day. {{fig:lead-client-fortnight}} shows the season most plainly: the average day peaks at {{out:figure-lead-client-fortnight:highest hour of the average day}} and bottoms out at {{out:figure-lead-client-fortnight:lowest hour of the average day}}, so a level alone would miss the evening rise and the night low.
+
+The 24-hour mean falls from {{out:figure-lead-client-fortnight:24-hour mean on the first full day, kWh}} kWh on the first full day to its lowest, {{out:figure-lead-client-fortnight:lowest 24-hour mean, kWh}} kWh, on {{out:figure-lead-client-fortnight:day of the lowest 24-hour mean}}, the Christmas dip, with rises in between. A level that updates follows that fall, so this is the boundary of the trend: a holiday dip is not a slow drift, and a model that took it for one would carry it forward. No part of the state names a holiday, so [Chapter 5](#add-calendar-and-holidays) adds one as a feature. From here on, the state of a series means its level, its trend and its season, the parts a model such as [exponential smoothing](#fit-exponential-smoothing) estimates.
 
 A per-client model is one fit for each client, on that client's history alone, so the cost is one fit per client per window. The subset this chapter uses, [`SUBSET8`](#the-case-and-its-data), has eight clients. Over the book's three standard cutoffs, Dec 29 to Dec 31, 2014, the last three days of the held-out week and the windows every later chapter reports, that is 24 fits for each model. The code runs the fits in one worker (`n_jobs=1`), which keeps the output identical from run to run. Every model in this chapter gets the same three cutoffs and the same 1,344 hours of history before each one. The cutoffs fall in the held-out week, and the subset holds the one late starter a later section needs.
 
@@ -21,6 +33,16 @@ A per-client model is one fit for each client, on that client's history alone, s
 ## Fit exponential smoothing {#fit-exponential-smoothing}
 
 Seasonal naive keeps only yesterday, so the first candidate keeps a level instead. Exponential smoothing moves its level toward each new reading. The simplest form updates the level as `level_t = alpha * y_t + (1 - alpha) * level_(t-1)`. The constant alpha, between 0 and 1, sets how fast the level follows the data. The forecast for every hour of the horizon is the last level. Recent readings count for more than older ones, and the weights fall off with age.
+
+Unrolled all the way back, the newest reading has weight alpha and each older one the weight before it times `1 - alpha`, so the weights decrease exponentially, as [*Forecasting: Principles and Practice*, section 8.1](https://otexts.com/fpp3/ses.html) puts it. {{fig:smoothing-weights}} draws the weights for two values of alpha, 0.2 and 0.5.
+
+![The newest reading weighs most, and a smaller alpha spreads weight back](../examples/figures/smoothing-weights.svg "The weight each of the last 24 readings carries")
+
+[Example: figure-smoothing-weights](../examples/figure-smoothing-weights.py)
+
+At alpha 0.5 the newest reading carries {{out:figure-smoothing-weights:weight on the newest reading, alpha 0.5}}, and {{out:figure-smoothing-weights:readings that carry half the weight, alpha 0.5}} reading holds half. At alpha 0.2 it carries {{out:figure-smoothing-weights:weight on the newest reading, alpha 0.2}}, and {{out:figure-smoothing-weights:readings that carry half the weight, alpha 0.2}} readings hold at least half.
+
+The weight past a day is {{out:figure-smoothing-weights:weight left on readings older than a day, alpha 0.2}} at alpha 0.2 and {{out:figure-smoothing-weights:weight left on readings older than a day, alpha 0.5}} at alpha 0.5. At alpha 1 the level is the last reading, so the forecast is the [naive](#three-baselines-to-beat) one. Near alpha 0 the level barely moves. At any alpha the forecast is flat and cannot follow {{fig:lead-client-fortnight}}'s daily rise and fall, so ETS adds a season.
 
 ETS, for error, trend and season, extends the simplest form of exponential smoothing. Each part is chosen from a short list. The trend can be none, additive or damped. The error can be additive or multiplicative, and the season can be none, additive or multiplicative. A name such as ETS(A,N,A) reads in that order: additive error, no trend, additive season. ETS(M,Ad,M) has a multiplicative error, a damped trend and a multiplicative season.
 
@@ -50,13 +72,25 @@ The forced season helps some clients and hurts others. It lowers the lead client
 
 ## Fit a fixed seasonal ARIMA {#fit-a-fixed-seasonal-arima}
 
-The second candidate models what seasonal naive leaves behind. The backtests of Chapter 3 are the test for what it adds. An ARIMA model writes the next reading as a weighted sum of earlier readings and earlier errors, after differencing: subtracting a reading from the reading one season earlier. The model is written ARIMA(p,d,q)(P,D,Q)[m]. The non-seasonal part has p autoregressive terms, d differences and q moving-average terms. The seasonal part has the same three, at lags that are multiples of the season length m.
+The second candidate models what seasonal naive leaves behind. The backtests of Chapter 3 are the test for what it adds. An ARIMA model writes the next reading as a weighted sum of earlier readings and earlier errors, after differencing: subtracting an earlier reading from each reading, the one immediately before it or the one a season earlier. The model is written ARIMA(p,d,q)(P,D,Q)[m]. The non-seasonal part has p autoregressive terms, d differences and q moving-average terms. The seasonal part has the same three, at lags that are multiples of the season length m.
+
+ARIMA's d counts the ordinary difference, each reading minus the one immediately before it, which [*Forecasting: Principles and Practice*, section 9.1](https://otexts.com/fpp3/stationarity.html) calls differencing. D counts the seasonal difference, each reading minus the reading one season earlier.
 
 The book's model is ARIMA(1,0,0)(1,1,0)[24]. It has one autoregressive term, no ordinary difference, no moving-average term, one seasonal difference at lag 24, and one seasonal autoregressive term at lag 24. Written out, with B the step back operator, so that B y_t is y_(t-1):
 
 `(1 - phi1 B)(1 - Phi1 B^24)(1 - B^24) y_t = e_t`
 
 The term `(1 - B^24)` replaces each reading with its change from the same hour yesterday. The lag of 24 is the point of the model for hourly demand. Each hour is compared with the same hour yesterday, which is the comparison seasonal naive makes, and the autoregressive terms then model what that comparison leaves behind. The seasonal difference removes the level, so the model has no mean term. statsforecast's `ARIMA` leaves the mean off for differenced series by default (`statsforecast/models.py`, the `ARIMA` docstring).
+
+{{fig:seasonal-difference}} shows the load above its change from the same hour yesterday, over the same fortnight as {{fig:lead-client-fortnight}}, and in the bottom panel the change swings around zero.
+
+![The load rises and falls within each day, and its change swings around zero](../examples/figures/seasonal-difference.svg "The load and its change from the same hour yesterday")
+
+[Example: figure-seasonal-difference](../examples/figure-seasonal-difference.py)
+
+Over the eight weeks the model reads, the figure drawing only the last two, the change averages {{out:figure-seasonal-difference:mean change from the same hour yesterday, kWh}} kWh, against {{out:figure-seasonal-difference:mean load, kWh}} kWh for the load, so the difference removes the level, and by its formula it also removes whatever repeats exactly from one day to the next. The spread falls from {{out:figure-seasonal-difference:spread of the load (standard deviation), kWh}} kWh for the load to {{out:figure-seasonal-difference:spread of the change (standard deviation), kWh}} kWh for the change, so the difference removes only part of it.
+
+What remains is what the two autoregressive terms model: over those eight weeks, the change still moves with the hour before it, at a correlation of {{out:figure-seasonal-difference:correlation of the change with the hour before}}, and little with the same hour yesterday, at {{out:figure-seasonal-difference:correlation of the change with the same hour yesterday}}. That is what this client's history shows, not proof that the order is right.
 
 We fix the order rather than search for it, and [the section on automatic search](#why-the-book-avoids-autoarima) explains why. Before the order goes into a backtest, fit it once with statsmodels {{version:statsmodels}} on the lead client's history before the first standard cutoff, and print the names of the fitted parameters. That shows whether the model has the terms you wrote down.
 
@@ -95,7 +129,7 @@ Three windows are a small sample, as [Chapter 3](#why-one-test-week-misleads) ex
 
 ## Meet the late starters {#meet-the-late-starters}
 
-One client in the subset starts late. `MT_115`'s first non-zero reading is at 00:00 on Jan 14, 2014. Before that, the meter reports zeros, and the data flags those hours `before_first_reading`. Those zeros are not low use. A model that reads them learns a level the client does not have. A late starter is a client whose first reading falls inside the history its model reads. The fix is the start rule: a series begins at its first reading. This matters for the supplier's decision. A level pulled low means buying too little for that client, the costlier of the supplier's two errors.
+One client in the subset starts late. `MT_115`'s first non-zero reading is at 00:00 on Jan 14, 2014. Before that, the meter reports zeros, and the data flags those hours `before_first_reading`. Those zeros are not low use. A model that reads them learns a level the client does not have. A late starter is a client whose first reading falls after the data begins, and so can fall inside the history its model reads. The fix is the start rule: a series begins at its first reading. This matters for the supplier's decision. A level pulled low means buying too little for that client, the costlier of the supplier's two errors.
 
 At the December cutoffs the eight weeks before each one are all readings, so this section uses February cutoffs: Feb 1, 2014, Feb 15, 2014 and Feb 28, 2014. Their eight-week histories still reach back before the first reading, so the case is in them. [Chapter 6](#forecast-many-clients-at-once) applies the same rule to all thirty clients.
 

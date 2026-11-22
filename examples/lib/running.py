@@ -44,7 +44,7 @@ LATE_ARRIVES = pd.Timestamp("2014-12-29 09:00")              # ... arrive after 
 
 def arrivals(df):
     """When each reading arrives: the end of its hour, or LATE_ARRIVES for the late block."""
-    arrive = df["ds"] + pd.Timedelta(hours=1)
+    arrive = df["ds"] + pd.Timedelta(1, unit="h")
     late = (df["unique_id"] == LATE_CLIENT) & (df["ds"] >= LATE_FROM) & (df["ds"] < LATE_TO)
     return arrive.mask(late, LATE_ARRIVES)
 
@@ -52,9 +52,9 @@ def arrivals(df):
 def late_copy(df, day):
     """df with the lead client's last six readings of the day before `day` arriving at 09:00 on `day`, as on Dec 28."""
     out = df.copy()
-    start = day - pd.Timedelta(days=1) + pd.Timedelta(hours=18)
+    start = day - pd.Timedelta(1, unit="D") + pd.Timedelta(18, unit="h")
     block = (out["unique_id"] == LATE_CLIENT) & (out["ds"] >= start) & (out["ds"] < day)
-    out.loc[block, "arrives"] = day + pd.Timedelta(hours=9)
+    out.loc[block, "arrives"] = day + pd.Timedelta(9, unit="h")
     return out
 
 
@@ -62,7 +62,7 @@ def refit_day(day, every=REFIT_EVERY):
     """The cutoff of the model that forecasts day: the latest refit day on or before it. Refit days are REFIT_ANCHOR and
     every `every` days after it."""
     steps = (pd.Timestamp(day) - REFIT_ANCHOR).days // every
-    return REFIT_ANCHOR + pd.Timedelta(days=steps * every)
+    return REFIT_ANCHOR + pd.Timedelta(steps * every, unit="D")
 
 
 def prepare(raw):
@@ -89,7 +89,7 @@ def feed(df, now, hours=HISTORY_HOURS, fill=LATE_FILL):
     pending: how many readings had not arrived by now.
     read_by: the latest arrival among the readings in train, which is the latest time the loop's inputs were in hand.
     """
-    win = df[(df["ds"] >= now - pd.Timedelta(hours=hours)) & (df["ds"] < now)].sort_values(["unique_id", "ds"])
+    win = df[(df["ds"] >= now - pd.Timedelta(hours, unit="h")) & (df["ds"] < now)].sort_values(["unique_id", "ds"])
     late = win["arrives"] > now
     arrived, pending = win[~late], win[late]
     last_arrived = pending["unique_id"].map(arrived.groupby("unique_id")["ds"].max())
@@ -100,7 +100,7 @@ def feed(df, now, hours=HISTORY_HOURS, fill=LATE_FILL):
     last_value = train.groupby("unique_id")["y"].last()
     value = pd.Series(pending["unique_id"].map(last_value).to_numpy())
     if fill == "week":
-        week_ago = pd.MultiIndex.from_arrays([pending["unique_id"], pending["ds"] - pd.Timedelta(hours=WEEK_HOURS)])
+        week_ago = pd.MultiIndex.from_arrays([pending["unique_id"], pending["ds"] - pd.Timedelta(WEEK_HOURS, unit="h")])
         prior = pd.Series(train.set_index(["unique_id", "ds"])["y"].reindex(week_ago).to_numpy())
         value = prior.fillna(value)
     elif fill != "forward":
@@ -118,7 +118,7 @@ def fit_at(df, fit_day, leak=False):
     """The model re-estimated on the history known at fit_day. Returns the model and the latest arrival among the readings
     it read. With leak=True it reads the history known one day later, so it has seen the readings of the day it
     forecasts. That is the leak the checks must catch."""
-    source = pd.Timestamp(fit_day) + pd.Timedelta(days=1) if leak else pd.Timestamp(fit_day)
+    source = pd.Timestamp(fit_day) + pd.Timedelta(1, unit="D") if leak else pd.Timestamp(fit_day)
     train, _, _, read_by = feed(df, source)
     model = make_forecaster(LAGS, (), scaled=True)
     model.fit(train[["unique_id", "ds", "y", "client"]], static_features=["client"])

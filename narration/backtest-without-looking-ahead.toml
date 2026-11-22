@@ -20,3 +20,6 @@ say = "The code takes the lead client's readings and defines three features: a t
 
 [examples.clock-change-census]
 say = "The code reads all thirty clients and counts the clock-change hours. It prints the gap rows, {{out:clock-change-census:gap rows}}, how many of them read zero and how many read above zero, how many sit below 5 percent of their neighbouring hours, and the median ratio to the neighbours. It prints the repeat rows, {{out:clock-change-census:repeat rows}}, and their median ratio to the neighbours."
+
+[examples.figure-rolling-windows]
+say = "The code takes the first four Sunday cutoffs of 2014 and the lead client's readings, and checks that each window's fixed history holds the same {{out:figure-rolling-windows:fixed history hours per window}} hours. It prints the days between cutoffs, {{out:figure-rolling-windows:step between cutoffs, days}}, the first reading of the series, {{out:figure-rolling-windows:first reading of the series}}, and the expanding history at the first and the last drawn window, {{out:figure-rolling-windows:expanding history hours at the first window}} and {{out:figure-rolling-windows:expanding history hours at the last drawn window}} hours. The figure draws each window's fixed history and its targets on one date axis, and the expanding history from the first reading up to each cutoff."
