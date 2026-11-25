@@ -1,0 +1,6 @@
+mean MASE difference Chronos minus Global: -0.108
+sign-flip p-value Chronos vs Global: 0.0038
+smallest detectable mean difference Chronos vs Global: 0.105
+mean MASE difference Chronos minus SeasonalNaive: -0.378
+sign-flip p-value Chronos vs SeasonalNaive: below 0.0001
+smallest detectable mean difference Chronos vs SeasonalNaive: 0.227

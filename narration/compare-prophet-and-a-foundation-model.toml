@@ -18,6 +18,9 @@ say = "The code checks the NHITS recording the same way, against its hash in the
 [examples.recorded-nhits-score]
 say = "The code reads the NHITS forecasts only, after the hash check, and scores the median on the same MASE scale and the same cutoffs as Chronos-2. It prints the mean MASE of the median, the quantile losses, and the coverage and interval score of the 80% and 95% ranges. The median's mean MASE over the thirty clients is {{out:recorded-nhits-score:mean MASE NHITS}}, and its 95% range covers {{out:recorded-nhits-score:coverage 95 NHITS}} of the readings."
 
+[examples.chronos2-paired-mase-test]
+say = "The code scores the recorded Chronos-2 median, the global model and seasonal naive on the thirty clients, and takes each client's Chronos-2 MASE minus the other model's. It flips the sign of every difference in all possible ways to get an exact p-value, then works out the smallest mean difference the test would find four times in five. Against the global model the mean difference is {{out:chronos2-paired-mase-test:mean MASE difference Chronos minus Global}}, and the smallest it detects is {{out:chronos2-paired-mase-test:smallest detectable mean difference Chronos vs Global}}."
+
 [examples.figure-chronos-ranges]
 say = "The code reads the recorded Chronos-2 forecasts only, after the hash check, and reads the lead client's load for the three standard cutoffs. It draws the actual load, the dashed median and the 80% and 95% ranges over those hours, each cutoff's forecast as its own segment. It prints how many of the scored hours fall inside each range, the coverage of each range for the lead client, and the mean absolute error of the median. The 80% range holds {{out:figure-chronos-ranges:readings inside the 80% range}} of the {{out:figure-chronos-ranges:hours scored}} readings, and the 95% range holds {{out:figure-chronos-ranges:readings inside the 95% range}}."
 
